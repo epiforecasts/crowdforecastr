@@ -11,6 +11,9 @@ run_app <- function(
   horizons = 4,
   selection_vars = c("location", "target_type"),
   forecast_quantiles = c(0.01, 0.025, seq(0.05, 0.95, 0.05), 0.975, 0.99),
+  google_account_mail = NULL, 
+  forecast_sheet_id, 
+  user_data_sheet_id,
   ...
 ) {
   with_golem_options(
@@ -21,7 +24,10 @@ run_app <- function(
     golem_opts = c(list(data = data, 
                         horizons = horizons,
                         forecast_quantiles = forecast_quantiles,
-                        selection_vars = selection_vars), 
+                        selection_vars = selection_vars, 
+                        google_account_mail = google_account_mail, 
+                        forecast_sheet_id = forecast_sheet_id, 
+                        user_data_sheet_id = user_data_sheet_id), 
                    list(...))
   )
 }

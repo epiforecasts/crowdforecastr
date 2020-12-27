@@ -3,18 +3,48 @@
 #' @param input,output,session Internal parameters for {shiny}. 
 #'     DO NOT REMOVE.
 #' @import shiny
+#' @importFrom googlesheets4 gs4_auth read_sheet
+#' @importFrom googledrive drive_auth drive_token
+#' @import shinyauthr
 #' @noRd
 app_server <- function( input, output, session ) {
-  # List the first level callModules here
   
+  # manage google authentification
+  options(gargle_oauth_cache = ".secrets")
+  googledrive::drive_auth(cache = ".secrets", email = golem::get_golem_options("google_account_mail"))
+  googlesheets4::gs4_auth(token = googledrive::drive_token())
+  
+  # reassign some values for simplicity that were given as inputs by the user
+  forecast_sheet_id <- golem::get_golem_options("forecast_sheet_id")
+  user_data_sheet_id <- golem::get_golem_options("user_data_sheet_id")
   data <- golem::get_golem_options("data")
   num_horizons <- golem::get_golem_options("horizons")
   forecast_quantiles <- golem::get_golem_options("forecast_quantiles")
   
-  current_data <- reactiveVal()
+  # load user data
+  print(user_data_sheet_id)
+  user_data <- googlesheets4::read_sheet(ss = user_data_sheet_id)
   
-  # current_data  <- filter_data(data, ...)
-  # do filtering within the individual server logic I guess?
+
+  # Handle login
+  current_user_data <- reactiveVal()
+  credentials <- callModule(shinyauthr::login, 
+                            id = "login", 
+                            data = user_data,
+                            user_col = username,
+                            pwd_col = Password,
+                            log_out = reactive(FALSE), # avoid the logout module
+                            sodium_hashed = TRUE)
+  
+  # # logout module - not sure this is needed at all
+  # logout_init <- callModule(shinyauthr::logout, 
+  #                           id = "logout", 
+  #                           active = reactive(TRUE))
+    
+  
+  # current_data <- reactiveVal()
+  # # current_data  <- filter_data(data, ...)
+  # # do filtering within the individual server logic I guess?
   
   forecast <- reactiveValues(
     median = rep(NA, num_horizons),

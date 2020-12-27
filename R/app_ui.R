@@ -14,13 +14,10 @@ app_ui <- function(request) {
     golem_add_external_resources(),
     
     dashboardPage(
+      # think about where to put a tooltip toggle button
       dashboardHeader(title = "crowdforecastr test"),
-      # dashboardHeader(title = "crowdforecastr test", 
-      #                 tags$li(shinyWidgets::prettySwitch(inputId = "tooltips", 
-      #                                                    label = "Tooltips",
-      #                                                    value = TRUE), 
-      #                         class = 'dropdown')
-      #                 ),
+      # tags$li(class = "dropdown", style = "padding: 8px;",
+      #         shinyauthr::logoutUI("logout")),
       dashboardSidebar(
         sidebarMenu(
           menuItem("Make Forecast", tabName = "makeforecast", icon = icon("chart-line")),
@@ -32,41 +29,49 @@ app_ui <- function(request) {
         # Leave this function for adding external resources
         golem_add_external_resources(),
         # List the first level UI elements here 
-        fluidPage(
-          # h1("Make a Forecast"),
+        
+        tabItems(
+          tabItem(tabName = "makeforecast",
+                  fluidPage(
+                    shiny::fluidRow(
+                      column(width = 9,
+                             shinydashboard::box(title = "Forecast visualisation",
+                                                 mod_forecast_plot_ui(id = "forecast_plot"),
+                                                 width = NULL)
+                      ),
+                      column(width = 3,
+                             shinydashboard::box(title = "View Options",
+                                                 mod_view_options_ui("view_options",
+                                                                     selection_vars = golem::get_golem_options("selection_vars"),
+                                                                     observations = golem::get_golem_options("data")),
+                                                 width = NULL),
+                             shinydashboard::box(title = "Adjust Forecast",
+                                                 # "box content",
+                                                 
+                                                 mod_adjust_forecast_ui("adjust_forecast",
+                                                                        num_horizons = golem::get_golem_options("horizons")),
+                                                 width = NULL)
+                             
+                      )
+                    ),
+                    shiny::fluidRow(
+                      shinydashboard::box(title = "Additional Information", 
+                                          mod_display_external_info_ui("cfr"),
+                                          width = 12)
+                    )
+                    
+                    
+                    
+                  )
+          ),
           
+          tabItem(tabName = "performance",
+                  h2("Widgets tab content")
+          ),
           
-          # mod_plotly_test_ui("test"),
-          
-          shiny::fluidRow(
-            column(width = 9,
-                   shinydashboard::box(title = "Forecast visualisation",
-                                       mod_forecast_plot_ui(id = "forecast_plot"),
-                                       width = NULL)
-                   ),
-            column(width = 3,
-                   shinydashboard::box(title = "View Options",
-                                       mod_view_options_ui("view_options",
-                                                           selection_vars = golem::get_golem_options("selection_vars"),
-                                                           observations = golem::get_golem_options("data")),
-                                       width = NULL),
-                   shinydashboard::box(title = "Adjust Forecast",
-                                       # "box content",
-                                       
-                                       mod_adjust_forecast_ui("adjust_forecast",
-                                                              num_horizons = golem::get_golem_options("horizons")),
-                                       width = NULL)
-
-                   )
-            ),
-          shiny::fluidRow(
-            shinydashboard::box(title = "Additional Information", 
-                                mod_display_external_info_ui("cfr"),
-                                width = 12)
+          tabItem(tabName = "account",
+                  h2("Account information")
           )
-          
-          
-          
         )
       )
     )

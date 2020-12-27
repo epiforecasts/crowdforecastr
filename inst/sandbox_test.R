@@ -17,6 +17,9 @@ observations <- dplyr::bind_rows(deaths_inc,
 
 obs_filt <- observations 
 
-run_app(data = obs_filt)
+run_app(data = obs_filt, 
+        google_account_mail = "epiforecasts@gmail.com", 
+        forecast_sheet_id = "1xdJDgZdlN7mYHJ0D0QbTcpiV9h1Dmga4jVoAg5DhaKI",
+        user_data_sheet_id = "1GJ5BNcN1UfAlZSkYwgr1-AxgsVA2wtwQ9bRwZ64ZXRQ")
 
 

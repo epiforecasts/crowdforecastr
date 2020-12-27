@@ -5,12 +5,13 @@
 #' @param id,input,output,session Internal parameters for {shiny}.
 #'
 #' @noRd 
-#'
+#' @importFrom shinyjs useShinyjs
 #' @importFrom shiny NS tagList 
 mod_adjust_forecast_ui <- function(id, num_horizons = 4){
   ns <- NS(id)
+  
   tagList(
-    
+    shinyjs::useShinyjs(),  
     
     fluidRow(column(8,
                     selectInput(inputId = ns("select_baseline"),
@@ -44,7 +45,7 @@ mod_adjust_forecast_ui <- function(id, num_horizons = 4){
                     actionButton(inputId = ns("update"),
                                  label = HTML("<b>Update</b>"))),
              column(4,
-                    actionButton(inputId = ns("submit"),
+                    actionButton(inputId = ns("<b>Submit</b>"),
                                  label = "Submit")))
   )
 }
@@ -59,11 +60,15 @@ mod_adjust_forecast_enter_values_ui <- function(id, horizon){
     fluidRow(
       column(4, 
              numericInput(inputId = ns("median"),
+                          min = 0,
                           label = paste0("Median ", horizon),
+                          step = 50,
                           value = NA)), 
       column(4, 
              numericInput(inputId = ns("width"),
+                          min = 0,
                           label = paste0("Width ", horizon),
+                          step = 0.01,
                           value = NA)), 
       column(4, 
              actionButton(inputId = ns("copy"),
@@ -178,7 +183,7 @@ mod_adjust_forecast_server <- function(id, num_horizons, observations, forecast,
 
 
 #' adjust_forecast Server Functions
-#' @importFrom shinyjs hideElement
+#' @importFrom shinyjs toggleElement
 #' @noRd 
 mod_adjust_forecast_enter_values_server <- function(id, horizon, forecast){
   moduleServer( id, function(input, output, session){
@@ -187,13 +192,28 @@ mod_adjust_forecast_enter_values_server <- function(id, horizon, forecast){
     if (horizon == 1) {
       print("horizon is 1")
       shinyjs::hideElement(id = "copy", asis = FALSE)
+      # , condition = "horizon != 1"
     }
     
-    # observe any changes in the median (if a point is dragged) and 
+    # observe any changes in the median 
+    # (if baseline changes or if a point is dragged) and 
     # update the numeric inputs accordingly
     observeEvent(forecast$median, {
       updateNumericInput(session = session, inputId = "median",
                          value = forecast$median[horizon])
+    })
+    # observe any changes in the median (if baseline is changed on startup) and
+    # update the numeric inputs accordingly
+    observeEvent(forecast$width, {
+      updateNumericInput(session = session, inputId = "width",
+                         value = round(forecast$width[horizon], 2))
+    })
+    
+    observeEvent(input$copy, {
+      updateNumericInput(session = session, inputId = "median",
+                         value = forecast$median_latent[horizon - 1])
+      updateNumericInput(session = session, inputId = "width",
+                         value = forecast$width_latent[horizon - 1])
     })
 
     observeEvent(input$median, {

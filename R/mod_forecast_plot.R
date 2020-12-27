@@ -52,22 +52,23 @@ mod_forecast_plot_server <- function(id, observations,
                                  xanchor = .x,
                                  yanchor = .y,
                                  # give each circle a 2 pixel diameter
-                                 x0 = -4, x1 = 4,
-                                 y0 = -4, y1 = 4,
+                                 x0 = -5, x1 = 5,
+                                 y0 = -5, y1 = 5,
                                  xsizemode = "pixel",
                                  ysizemode = "pixel",
                                  # other visual properties
-                                 fillcolor = "orange",
+                                 fillcolor = 'rgb(44, 160, 44)',
                                  line = list(color = "transparent")))
 
       # make basic plot
       plot <- plot_ly() %>%
         add_trace(x = obs_filtered$target_end_date,
                   y = obs_filtered$value, type = "scatter",
-                  name = 'observed data',mode = 'lines+markers') %>%
+                  name = 'observed data',mode = 'lines+markers', 
+                  marker = list(size = 2)) %>%
         add_trace(x = forecast$x,
                   y = forecast$median, type = "scatter",
-                  name = 'forecast',mode = 'lines') %>%
+                  name = 'forecast', mode = 'lines', color = I("dark green")) %>%
         layout(xaxis = list(range = c(min(obs_filtered$target_end_date),
                                       max(forecast$x) + 5))) %>%
         # layout(yaxis = list(hoverformat = '0f', rangemode = "tozero")) %>%
@@ -85,15 +86,11 @@ mod_forecast_plot_server <- function(id, observations,
         lower_quantile <- round((100 - int) / (2 * 100), 3)
         upper_quantile <- 1 - lower_quantile
         
-        print(lower_quantile)
-        
         lower_bound <- rep(NA, num_horizons)
         upper_bound <- rep(NA, num_horizons)
         
         # calculate upper and lower bound for a given prediction interval
         for (horizon in 1:num_horizons) {
-          print(round(forecast_quantiles, 3) == lower_quantile)
-          
           lower_bound[horizon] <- forecast[[paste0("forecasts_horizon_", horizon)]][round(forecast_quantiles, 3) == lower_quantile]
           upper_bound[horizon] <- forecast[[paste0("forecasts_horizon_", horizon)]][round(forecast_quantiles, 3) == upper_quantile]
         }
@@ -102,6 +99,7 @@ mod_forecast_plot_server <- function(id, observations,
         print(upper_bound)
         
         color <- "'rgba(255, 127, 14," #orange
+        color <- "'rgba(44, 160, 44," #other green
         # color <- "'rgba(26,150,65," # green
         
         plot <- plot %>%
