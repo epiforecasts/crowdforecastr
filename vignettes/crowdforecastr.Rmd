@@ -1,0 +1,29 @@
+---
+title: "crowdforecastr"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{crowdforecastr}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(crowdforecastr)
+```
+
+
+
+```{r baseline-functions}
+test_data <- rnorm(19, 1:10 )
+
+
+
+
+```
