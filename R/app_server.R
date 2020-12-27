@@ -38,12 +38,14 @@ app_server <- function( input, output, session ) {
   mod_forecast_plot_server(id = "forecast_plot",
                            observations = golem::get_golem_options("data"),
                            forecast = forecast,
+                           num_horizons = num_horizons,
                            selection_vars = golem::get_golem_options("selection_vars"),
                            view_options = view_options, 
                            forecast_quantiles = forecast_quantiles)
   mod_adjust_forecast_server("adjust_forecast", forecast = forecast, 
                              observations = observations, 
                              view_options = view_options, 
+                             forecast_quantiles = forecast_quantiles,
                              selection_vars = golem::get_golem_options("selection_vars"),
                              num_horizons = num_horizons, 
                              baseline = baseline)

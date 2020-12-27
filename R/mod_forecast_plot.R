@@ -31,6 +31,7 @@ mod_forecast_plot_ui <- function(id){
 #' @noRd 
 mod_forecast_plot_server <- function(id, observations, 
                                      forecast, 
+                                     num_horizons,
                                      view_options, 
                                      selection_vars, 
                                      forecast_quantiles){
@@ -76,32 +77,40 @@ mod_forecast_plot_server <- function(id, observations,
         config(editable = TRUE)
 
       # add ribbons for the selected prediction intervals
-      # 
-      # for (interval in view_options$desired_intervals) {
-      #   
-      #   lower_quantile <- round((100 - interval) / (2 * 100), 3)
-      #   upper_quantile <- 1 - lower_quantile
-      #   
-      #   # 
-      #   # lower_bound <- c(rv$forecasts_week_1[round(quantile_grid, 3) == lower_quantile], 
-      #   #                  rv$forecasts_week_2[round(quantile_grid, 3) == lower_quantile], 
-      #   #                  rv$forecasts_week_3[round(quantile_grid, 3) == lower_quantile], 
-      #   #                  rv$forecasts_week_4[round(quantile_grid, 3) == lower_quantile])
-      #   # 
-      #   # 
-      #   # upper_bound <- c(rv$forecasts_week_1[round(quantile_grid, 3) == upper_quantile], 
-      #   #                  rv$forecasts_week_2[round(quantile_grid, 3) == upper_quantile], 
-      #   #                  rv$forecasts_week_3[round(quantile_grid, 3) == upper_quantile], 
-      #   #                  rv$forecasts_week_4[round(quantile_grid, 3) == upper_quantile])
-      #   # 
-      #   # 
-      #   # p <- p %>%
-      #   #   add_ribbons(x = x_pred(), ymin = lower_bound, ymax = upper_bound,
-      #   #               name = paste0(i, "% prediction interval"),
-      #   #               line = list(color = "transparent"),
-      #   #               fillcolor = paste0("'rgba(26,150,65,", (1 - i/100 + 0.1), ")'"))
-      #   
-      # }
+      for (interval in view_options$desired_intervals) {
+        
+        int <- sub(pattern = "%", replacement = "", x = interval) %>%
+          as.numeric()
+
+        lower_quantile <- round((100 - int) / (2 * 100), 3)
+        upper_quantile <- 1 - lower_quantile
+        
+        print(lower_quantile)
+        
+        lower_bound <- rep(NA, num_horizons)
+        upper_bound <- rep(NA, num_horizons)
+        
+        # calculate upper and lower bound for a given prediction interval
+        for (horizon in 1:num_horizons) {
+          print(round(forecast_quantiles, 3) == lower_quantile)
+          
+          lower_bound[horizon] <- forecast[[paste0("forecasts_horizon_", horizon)]][round(forecast_quantiles, 3) == lower_quantile]
+          upper_bound[horizon] <- forecast[[paste0("forecasts_horizon_", horizon)]][round(forecast_quantiles, 3) == upper_quantile]
+        }
+        
+        print(lower_bound)
+        print(upper_bound)
+        
+        color <- "'rgba(255, 127, 14," #orange
+        # color <- "'rgba(26,150,65," # green
+        
+        plot <- plot %>%
+          add_ribbons(x = forecast$x, ymin = lower_bound, ymax = upper_bound,
+                      name = paste0(interval, "% prediction interval"),
+                      line = list(color = "transparent"),
+                      fillcolor = paste0(color, (1 - int/100 + 0.1), ")'"))
+
+      }
       
       
       # turn plot into log scale if log is selected by user
@@ -123,7 +132,7 @@ mod_forecast_plot_server <- function(id, observations,
                    row_index <- unique(readr::parse_number(names(shape_anchors)) + 1)
                    y_coord <- as.numeric(shape_anchors[2])
                    
-                   forecast$median[row_index] <- y_coord
+                   forecast$median[row_index] <- round(y_coord)
                  })
     
     
