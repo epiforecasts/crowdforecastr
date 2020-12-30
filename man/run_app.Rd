@@ -12,6 +12,8 @@ run_app(
   google_account_mail = NULL,
   forecast_sheet_id,
   user_data_sheet_id,
+  user_management = TRUE,
+  app_up_to_date = TRUE,
   ...
 )
 }

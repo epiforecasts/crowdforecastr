@@ -95,9 +95,6 @@ mod_forecast_plot_server <- function(id, observations,
           upper_bound[horizon] <- forecast[[paste0("forecasts_horizon_", horizon)]][round(forecast_quantiles, 3) == upper_quantile]
         }
         
-        print(lower_bound)
-        print(upper_bound)
-        
         color <- "'rgba(255, 127, 14," #orange
         color <- "'rgba(44, 160, 44," #other green
         # color <- "'rgba(26,150,65," # green

@@ -6,6 +6,7 @@
 #' @importFrom googlesheets4 gs4_auth read_sheet
 #' @importFrom googledrive drive_auth drive_token
 #' @import shinyauthr
+#' @import shinyalert
 #' @noRd
 app_server <- function( input, output, session ) {
   
@@ -15,32 +16,121 @@ app_server <- function( input, output, session ) {
   googlesheets4::gs4_auth(token = googledrive::drive_token())
   
   # reassign some values for simplicity that were given as inputs by the user
-  forecast_sheet_id <- golem::get_golem_options("forecast_sheet_id")
-  user_data_sheet_id <- golem::get_golem_options("user_data_sheet_id")
   data <- golem::get_golem_options("data")
   num_horizons <- golem::get_golem_options("horizons")
   forecast_quantiles <- golem::get_golem_options("forecast_quantiles")
+  app_up_to_date <- golem::get_golem_options("app_up_to_date")
+  forecast_sheet_id <- golem::get_golem_options("forecast_sheet_id")
+  use_user_management <- golem::get_golem_options("user_management")
   
-  # load user data
-  print(user_data_sheet_id)
-  user_data <- googlesheets4::read_sheet(ss = user_data_sheet_id)
   
-
-  # Handle login
-  current_user_data <- reactiveVal()
-  credentials <- callModule(shinyauthr::login, 
-                            id = "login", 
-                            data = user_data,
-                            user_col = username,
-                            pwd_col = Password,
-                            log_out = reactive(FALSE), # avoid the logout module
-                            sodium_hashed = TRUE)
-  
-  # # logout module - not sure this is needed at all
-  # logout_init <- callModule(shinyauthr::logout, 
-  #                           id = "logout", 
-  #                           active = reactive(TRUE))
+  if (use_user_management) {
+    # load user data
+    user_data_sheet_id <- golem::get_golem_options("user_data_sheet_id")
+    user_data <- googlesheets4::read_sheet(ss = user_data_sheet_id)
     
+    # Handle login
+    current_user_data <- reactiveVal()
+    
+    user_management <- reactiveValues(
+      open_login = TRUE,
+      app_unlocked = FALSE, 
+      open_new_user_consent = FALSE, 
+      open_create_new_user = FALSE,
+      consent_given = FALSE,
+      open_create_user_form = FALSE
+    )
+    
+    # open login screen when appropriate
+    observeEvent(user_management$open_login, {
+      
+      if (user_management$open_login) {
+        
+        removeModal()
+        
+        showModal(modalDialog(
+          tagList(
+            mod_user_management_login_ui("login")
+          ),
+          footer = NULL, 
+          size = "l"))
+        
+        
+        # shinyalert::shinyalert(title = "Welcome", 
+        #                        html = TRUE,
+        #                        text = 
+        #                          tagList(
+        #                            mod_user_management_login_ui("login")
+        #                          ), 
+        #                        type = "", 
+        #                        showConfirmButton = FALSE,
+        #                        size = "l", 
+        #                        immediate = TRUE)
+      } 
+    }, ignoreNULL = FALSE)
+    
+    mod_user_management_login_server("login", user_management)
+    
+    # open screen with consent needed to create new user if appropriate
+    observeEvent(user_management$open_new_user_consent, {
+      
+      
+      if (user_management$open_new_user_consent) {
+        
+        removeModal()
+        showModal(modalDialog(
+          tagList(
+            mod_user_management_new_user_consent_ui("create_new_user_consent"),
+          ), 
+          footer = NULL, 
+          size = "l"))
+        
+        # shinyalert::shinyalert(title = "Welcome", 
+        #                        html = TRUE,
+        #                        text = 
+        #                          tagList(
+        #                            
+        #                            mod_user_management_new_user_consent_ui("create_new_user"),
+        #                            h2("hello")
+        #                            # mod_user_management_new_user_ui("new_user")
+        #                          ), 
+        #                        type = "", 
+        #                        size = "l", 
+        #                        immediate = TRUE)
+      }
+    })
+    mod_user_management_new_user_consent_server("create_new_user_consent", user_management)
+
+    
+    observeEvent(user_management$open_create_user_form, 
+                 {
+                   if (user_management$open_create_user_form) {
+                     removeModal()
+                     showModal(modalDialog(
+                       size = "l",
+                       title = "Create New User", 
+                       mod_user_management_create_user_ui("create_user_form"),
+                       footer = NULL
+                     ))
+                   }
+                 })
+    mod_user_management_create_user_server("create_user_form", 
+                                           user_management,
+                                           user_data, 
+                                           current_user_data, 
+                                           user_data_sheet_id)
+  }
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
   
   # current_data <- reactiveVal()
   # # current_data  <- filter_data(data, ...)

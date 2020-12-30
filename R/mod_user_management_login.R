@@ -1,0 +1,53 @@
+#' user_management_login UI Function
+#'
+#' @description A shiny Module.
+#'
+#' @param id,input,output,session Internal parameters for {shiny}.
+#'
+#' @noRd 
+#'
+#' @importFrom shiny NS tagList 
+mod_user_management_login_ui <- function(id){
+  ns <- NS(id)
+  tagList(
+    
+    loginUI(id = ns("login")),
+    br(), 
+    fluidRow(column(12, 
+                    style = 'padding-left: 15px; padding-right: 15px',
+                    h4("Note: If the app doesn't fit on your screen we highly recommend you zoom out a bit"), 
+                    h5("If you just want to take a look, log in with username and password 'test'"))),
+    fluidRow(column(12, 
+                    style = 'padding-left: 15px; padding-right: 15px',
+                    h4("message"))),
+    br(),
+    actionButton(inputId = ns("new_user"),
+                 label = "Create New User")
+    
+ 
+    
+  )
+}
+    
+#' user_management_login Server Functions
+#'
+#' @noRd 
+mod_user_management_login_server <- function(id, user_management){
+  moduleServer( id, function(input, output, session){
+    ns <- session$ns
+    
+    observeEvent(input$new_user, {
+      print("pressed")
+      user_management$open_login <- FALSE
+      user_management$open_new_user_consent <- TRUE
+    })
+    
+ 
+  })
+}
+    
+## To be copied in the UI
+# mod_user_management_login_ui("user_management_login_ui_1")
+    
+## To be copied in the server
+# mod_user_management_login_server("user_management_login_ui_1")

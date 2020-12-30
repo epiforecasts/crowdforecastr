@@ -190,7 +190,6 @@ mod_adjust_forecast_enter_values_server <- function(id, horizon, forecast){
     ns <- session$ns
     
     if (horizon == 1) {
-      print("horizon is 1")
       shinyjs::hideElement(id = "copy", asis = FALSE)
       # , condition = "horizon != 1"
     }

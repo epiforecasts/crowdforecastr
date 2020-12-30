@@ -10,7 +10,8 @@
 app_ui <- function(request) {
   
   tagList(
-    
+    shinyjs::useShinyjs(),
+    shinyalert::useShinyalert(),
     golem_add_external_resources(),
     
     dashboardPage(
