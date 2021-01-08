@@ -14,7 +14,8 @@
 mod_forecast_plot_ui <- function(id){
   ns <- NS(id)
   tagList(
-    plotlyOutput(ns("forecast_plot"), height = "850px")
+    plotlyOutput(ns("forecast_plot"), height = "850px"), 
+    h4("Drag points around to change the forecast!")
   )
 }
     
@@ -71,8 +72,9 @@ mod_forecast_plot_server <- function(id, observations,
                   name = 'forecast', mode = 'lines', color = I("dark green")) %>%
         layout(xaxis = list(range = c(min(obs_filtered$target_end_date),
                                       max(forecast$x) + 5))) %>%
-        # layout(yaxis = list(hoverformat = '0f', rangemode = "tozero")) %>%
+        layout(yaxis = list(hoverformat = '0f', rangemode = "tozero")) %>%
         layout(shapes = c(circles_pred)) %>%
+        layout(title = "Observations and Forecast") %>%
         layout(legend = list(orientation = 'h')) %>%
         # config(edits = list(shapePosition = TRUE))
         config(editable = TRUE)
@@ -112,12 +114,11 @@ mod_forecast_plot_server <- function(id, observations,
       if(view_options$plot_scale == "log") {
         plot <- layout(plot, yaxis = list(type = "log"))
       }
-      
-      
 
       plot
     })
     
+    print("2.1")
     # update x/y reactive values in response to changes in shape anchors
     observeEvent(event_data("plotly_relayout"),
                  {
@@ -126,7 +127,6 @@ mod_forecast_plot_server <- function(id, observations,
                    if (length(shape_anchors) != 2) return()
                    row_index <- unique(readr::parse_number(names(shape_anchors)) + 1)
                    y_coord <- as.numeric(shape_anchors[2])
-                   
                    forecast$median[row_index] <- round(y_coord)
                  })
     

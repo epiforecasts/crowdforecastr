@@ -16,7 +16,20 @@ Imports:
     DT,
     glue,
     htmltools,
-    processx
+    processx,
+    pkgload,
+    magrittr,
+    plotly,
+    shinyjs,
+    shinyalert,
+    shinyauthr,
+    shinydashboard,
+    dplyr,
+    googledrive,
+    googlesheets4,
+    shinydashboardPlus,
+    shinyWidgets,
+    readr
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.1.1

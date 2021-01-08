@@ -17,9 +17,6 @@ mod_user_management_login_ui <- function(id){
                     style = 'padding-left: 15px; padding-right: 15px',
                     h4("Note: If the app doesn't fit on your screen we highly recommend you zoom out a bit"), 
                     h5("If you just want to take a look, log in with username and password 'test'"))),
-    fluidRow(column(12, 
-                    style = 'padding-left: 15px; padding-right: 15px',
-                    h4("message"))),
     br(),
     actionButton(inputId = ns("new_user"),
                  label = "Create New User")
@@ -32,12 +29,33 @@ mod_user_management_login_ui <- function(id){
 #' user_management_login Server Functions
 #'
 #' @noRd 
-mod_user_management_login_server <- function(id, user_management){
+mod_user_management_login_server <- function(id, 
+                                             user_management, 
+                                             user_data){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
     
+    credentials <- callModule(shinyauthr::login, "login", 
+                              data = user_data,
+                              user_col = username,
+                              pwd_col = Password,
+                              sodium_hashed = TRUE,
+                              log_out = reactive(TRUE))
+    
+    observeEvent(credentials()$user_auth, {
+      if (credentials()$user_auth) {
+        
+        user_management$app_unlocked <- TRUE
+        user_management$open_login <- FALSE
+        
+        user_management$current_user_data <- credentials()$info
+        
+        removeModal()
+        
+      }
+    })
+    
     observeEvent(input$new_user, {
-      print("pressed")
       user_management$open_login <- FALSE
       user_management$open_new_user_consent <- TRUE
     })

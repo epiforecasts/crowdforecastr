@@ -1,0 +1,12 @@
+name: crowdforecastr
+title: crowdforecastr
+username:
+account: nikosbosse
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 3437296
+bundleId: 4068869
+url: https://nikosbosse.shinyapps.io/crowdforecastr/
+when: 1610034151.64434
+asMultiple: FALSE
+asStatic: FALSE

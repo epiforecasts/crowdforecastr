@@ -45,8 +45,8 @@ mod_adjust_forecast_ui <- function(id, num_horizons = 4){
                     actionButton(inputId = ns("update"),
                                  label = HTML("<b>Update</b>"))),
              column(4,
-                    actionButton(inputId = ns("<b>Submit</b>"),
-                                 label = "Submit")))
+                    actionButton(inputId = ns("submit"),
+                                 label = HTML("<b>Submit</b>"))))
   )
 }
 
@@ -86,7 +86,7 @@ mod_adjust_forecast_enter_values_ui <- function(id, horizon){
 #'
 #' @noRd 
 mod_adjust_forecast_server <- function(id, num_horizons, observations, forecast, 
-                                       forecast_quantiles,
+                                       forecast_quantiles, user_management,
                                        view_options, selection_vars, baseline){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
@@ -98,15 +98,16 @@ mod_adjust_forecast_server <- function(id, num_horizons, observations, forecast,
                                                      forecast = forecast)
            })
 
-    observeEvent(input$select_baseline, {
-      baseline <- input$select_baseline
+    observeEvent(input$distribution, {
+      forecast$distribution <- input$distribution
     })
 
     observeEvent(input$apply_baseline, {
       
-      filtered_observations <-     filtered <- filter_data_util(data = observations, 
-                                                                view_options, 
-                                                                selection_vars)
+      
+      filtered_observations <- filter_data_util(data = observations, 
+                                                view_options, 
+                                                selection_vars)
       
       baseline <- baseline_forecast(baseline = input$select_baseline, 
                                     filtered_observations = filtered_observations, 
@@ -148,6 +149,7 @@ mod_adjust_forecast_server <- function(id, num_horizons, observations, forecast,
     # not quite sure whether this logic should happen somewhere else?
     observeEvent(c(forecast$median, forecast$width), {
       
+      
       # THIS IS BUSINESS LOGIC THAT SHOULD HAPPEN SOMEWHERE OUTSIDE
       
       for (horizon in 1:num_horizons) {
@@ -177,6 +179,97 @@ mod_adjust_forecast_server <- function(id, num_horizons, observations, forecast,
     })
     
     
+    observeEvent(c(input$submit),
+                 {
+                   print("submission pressed")
+                   # error handling
+                   # expand this at some point to handle both conditions
+                   if (!is.na(forecast$median) && all(forecast$median == forecast$median_latent)) {
+                     mismatch <- FALSE
+                   } else {
+                     mismatch <- TRUE
+                   }
+
+                   
+                   if (mismatch) {
+                     showNotification("Your forecasts don't match your inputs yet. Please press 'update' for all changes to take effect and submit again.", type = "error")
+                   } else {
+                     # collect data in submission sheet
+                     current_user_data <- user_management$current_user_data
+                     submissions <- data.frame(forecaster_id = current_user_data$forecaster_id, 
+                                               forecast_date = Sys.Date(),
+                                               forecast_time = Sys.time(),
+                                               forecast_week = lubridate::epiweek(Sys.Date()),
+                                               expert = current_user_data$expert,
+                                               leader_board = current_user_data$appearboard,
+                                               name_board = current_user_data$board_name,
+                                               # assigned_forecast_type = condition$initial,
+                                               # forecast_type = condition$current,
+                                               
+                                               distribution = forecast$distribution,
+                                               
+                                               median = forecast$median,
+                                               # lower_90 = rv$lower_90,
+                                               # upper_90 = rv$upper_90,
+                                               width = forecast$width,
+                                               
+                                               horizon = 1:golem::get_golem_options("horizons"),
+                                               
+                                               target_end_date = forecast$x,
+                                               # assigned_baseline_model = baseline_model,
+                                               # chosen_baseline_model = input$baseline_model,
+                                               # comments = comments(),
+                                               
+                                               submission_date = golem::get_golem_options("submission_date"))
+                     
+                     # add information about selection variables to submission sheet
+                     lapply(selection_vars, 
+                            FUN = function(selection_var) {
+                              submissions[[selection_var]] <- forecast[[selection_var]]
+                            })
+                     
+
+                     
+                     print("submitting")
+                     # append data to google sheet
+                     googlesheets4::sheet_append(data = submissions,
+                                                 ss = golem::get_golem_options("forecast_sheet_id"))
+                     
+                     # move to the next forecast
+                     # go through the selection variables in a backwards order
+                     n <- length(selection_vars)
+                     reverse_selection <- selection_vars[n:1]
+                     for (selection_var in reverse_selection) {
+                       
+                       print(selection_var)
+                       print(forecast[[selection_var]])
+                       
+                       available_choices <- unique(observations[[selection_var]])
+                       num_choices <- length(available_choices)
+                       index_current_selection <- which(forecast[[selection_var]] == available_choices)
+                       
+                       # increment choice if we are not at the maximums
+                       if (index_current_selection < num_choices) {
+                         # change variable stored in forecasts. This will lead to an update in the view_options_module
+                         forecast[[selection_var]] <- available_choices[index_current_selection + 1]
+                         showNotification("Thank you for your submissions. Here is the next data set!", type = "message")
+                         print(forecast[[selection_var]])
+                         break
+                       } else if (index_current_selection == num_choices) {
+                         # if the last choice was selected, change back to the first choice
+                         forecast[[selection_var]] <- available_choices[1]
+                         
+                       }
+                       # if we arrived at the the last iteration
+                       if (selection_var == selection_vars[1]) {
+                         showNotification("Thank you for your submissions. If you completed all previous locations, you are done now!", type = "message")
+                       }
+                     }
+                   }
+                 },
+                 priority = 99,
+                 ignoreInit = TRUE)
+
   })
 }
     
@@ -193,6 +286,7 @@ mod_adjust_forecast_enter_values_server <- function(id, horizon, forecast){
       shinyjs::hideElement(id = "copy", asis = FALSE)
       # , condition = "horizon != 1"
     }
+    
     
     # observe any changes in the median 
     # (if baseline changes or if a point is dragged) and 

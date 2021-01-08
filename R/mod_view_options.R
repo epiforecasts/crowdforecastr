@@ -66,7 +66,7 @@ mod_view_options_ui <- function(id, selection_vars, observations){
 #' @param observations the data.frame with observed values
 #'
 #' @noRd 
-mod_view_options_server <- function(id, view_options, 
+mod_view_options_server <- function(id, view_options, forecast,
                                     selection_vars, observations){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
@@ -77,8 +77,10 @@ mod_view_options_server <- function(id, view_options,
            FUN = function(var) {
              mod_view_options_selection_field_server(id = paste0("select_", var),
                                                      selection_var = var, 
+                                                     forecast = forecast,
                                                      view_options = view_options)
            })
+    
     
     # update the list of reactive values when selections are changed
     observeEvent(input$weeks_to_show, {
@@ -135,13 +137,23 @@ mod_view_options_selection_field_ui <- function(id, selection_var, observations)
 #' elements in `selection_vars`
 #'
 #' @noRd 
-mod_view_options_selection_field_server <- function(id, selection_var, view_options){
+mod_view_options_selection_field_server <- function(id, selection_var, 
+                                                    view_options, forecast){
   moduleServer( id, function(input, output, session){
     ns <- NS(id)
     
     # update the view_options reactive list whenever an input changes
     observeEvent(input$selection, {
       view_options[[selection_var]] <- input$selection
+      forecast[[selection_var]] <- input$selection
+    })
+    
+    # also update the numeric whenever the view_options change. This change can 
+    # be externally introduced when something is submitted and the next 
+    # forecast is selected
+    observeEvent(forecast[[selection_var]], {
+      updateSelectInput(session = session, inputId = "selection", 
+                        selected = forecast[[selection_var]])
     })
   })
 }

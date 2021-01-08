@@ -36,17 +36,21 @@ app_ui <- function(request) {
                   fluidPage(
                     shiny::fluidRow(
                       column(width = 9,
-                             shinydashboard::box(title = "Forecast visualisation",
+                             shinydashboard::box(title = NULL,
                                                  mod_forecast_plot_ui(id = "forecast_plot"),
                                                  width = NULL)
                       ),
                       column(width = 3,
                              shinydashboard::box(title = "View Options",
+                                                 status = "primary", 
+                                                 solidHeader = TRUE,
                                                  mod_view_options_ui("view_options",
                                                                      selection_vars = golem::get_golem_options("selection_vars"),
                                                                      observations = golem::get_golem_options("data")),
                                                  width = NULL),
                              shinydashboard::box(title = "Adjust Forecast",
+                                                 status = "primary", 
+                                                 solidHeader = TRUE,
                                                  # "box content",
                                                  
                                                  mod_adjust_forecast_ui("adjust_forecast",
@@ -57,6 +61,8 @@ app_ui <- function(request) {
                     ),
                     shiny::fluidRow(
                       shinydashboard::box(title = "Additional Information", 
+                                          status = "primary", 
+                                          solidHeader = TRUE,
                                           mod_display_external_info_ui("cfr"),
                                           width = 12)
                     )
@@ -67,11 +73,14 @@ app_ui <- function(request) {
           ),
           
           tabItem(tabName = "performance",
-                  h2("Widgets tab content")
+                  h2("Your Past Performnace"), 
+                  mod_past_performance_ui("past_performance")
           ),
           
           tabItem(tabName = "account",
-                  h2("Account information")
+                  h2("Account information"), 
+                  mod_account_details_ui("account_details")
+                  
           )
         )
       )

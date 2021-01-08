@@ -9,12 +9,14 @@
 run_app <- function(
   data,
   horizons = 4,
+  submission_date = NA,
   selection_vars = c("location", "target_type"),
   forecast_quantiles = c(0.01, 0.025, seq(0.05, 0.95, 0.05), 0.975, 0.99),
   google_account_mail = NULL, 
   forecast_sheet_id, 
   user_data_sheet_id,
   user_management = TRUE,
+  path_past_forecasts = NULL,
   app_up_to_date = TRUE,
   ...
 ) {
@@ -31,6 +33,7 @@ run_app <- function(
                         forecast_sheet_id = forecast_sheet_id, 
                         user_data_sheet_id = user_data_sheet_id, 
                         user_management = user_management,
+                        submission_date = submission_date,
                         app_up_to_date = app_up_to_date), 
                    list(...))
   )

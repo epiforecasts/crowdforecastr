@@ -47,9 +47,7 @@ mod_user_management_create_user_ui <- function(id){
 #'
 #' @noRd 
 mod_user_management_create_user_server <- function(id, user_management, 
-                                                   user_data, 
-                                                   current_user_data, 
-                                                   user_data_sheet_id){
+                                                   user_data){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
  
@@ -113,6 +111,8 @@ mod_user_management_create_user_server <- function(id, user_management,
                        
                        googlesheets4::sheet_append(data = current_user_data, 
                                                    ss = user_data_sheet_id)
+                       
+                       user_management$current_user_data <- current_user_data
                        
                      }
                    } else {

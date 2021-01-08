@@ -22,17 +22,21 @@ app_server <- function( input, output, session ) {
   app_up_to_date <- golem::get_golem_options("app_up_to_date")
   forecast_sheet_id <- golem::get_golem_options("forecast_sheet_id")
   use_user_management <- golem::get_golem_options("user_management")
+  observations <- golem::get_golem_options("data")
   
+  user_management <- NULL
   
   if (use_user_management) {
     # load user data
     user_data_sheet_id <- golem::get_golem_options("user_data_sheet_id")
     user_data <- googlesheets4::read_sheet(ss = user_data_sheet_id)
     
-    # Handle login
-    current_user_data <- reactiveVal()
+    path_past_forecasts <- golem::get_golem_options("path_past_forecasts")
     
+    # store everything needed for user management in a list
     user_management <- reactiveValues(
+      user_data_sheet_id = user_data_sheet_id,
+      current_user_data = NULL,
       open_login = TRUE,
       app_unlocked = FALSE, 
       open_new_user_consent = FALSE, 
@@ -45,17 +49,13 @@ app_server <- function( input, output, session ) {
     observeEvent(user_management$open_login, {
       
       if (user_management$open_login) {
-        
         removeModal()
-        
         showModal(modalDialog(
           tagList(
             mod_user_management_login_ui("login")
           ),
           footer = NULL, 
           size = "l"))
-        
-        
         # shinyalert::shinyalert(title = "Welcome", 
         #                        html = TRUE,
         #                        text = 
@@ -68,8 +68,7 @@ app_server <- function( input, output, session ) {
         #                        immediate = TRUE)
       } 
     }, ignoreNULL = FALSE)
-    
-    mod_user_management_login_server("login", user_management)
+    mod_user_management_login_server("login", user_management, user_data)
     
     # open screen with consent needed to create new user if appropriate
     observeEvent(user_management$open_new_user_consent, {
@@ -99,7 +98,8 @@ app_server <- function( input, output, session ) {
         #                        immediate = TRUE)
       }
     })
-    mod_user_management_new_user_consent_server("create_new_user_consent", user_management)
+    mod_user_management_new_user_consent_server("create_new_user_consent", 
+                                                user_management)
 
     
     observeEvent(user_management$open_create_user_form, 
@@ -115,10 +115,14 @@ app_server <- function( input, output, session ) {
                    }
                  })
     mod_user_management_create_user_server("create_user_form", 
-                                           user_management,
-                                           user_data, 
-                                           current_user_data, 
-                                           user_data_sheet_id)
+                                           user_management)
+    
+    
+    # if (!is.null(path_past_forecasts)) {
+    #   user_management$past_forecasts <- load_past_forecasts(path_past_forecasts) %>%
+    #     dplyr::filter(model == )
+    #     
+    # }
   }
   
   
@@ -130,12 +134,6 @@ app_server <- function( input, output, session ) {
   
   
   
-  
-  
-  # current_data <- reactiveVal()
-  # # current_data  <- filter_data(data, ...)
-  # # do filtering within the individual server logic I guess?
-  
   forecast <- reactiveValues(
     median = rep(NA, num_horizons),
     width = rep(NA, num_horizons),
@@ -143,18 +141,28 @@ app_server <- function( input, output, session ) {
     median_latent = rep(NA, num_horizons),
     width_latent = rep(NA, num_horizons),
     
+    distribution = NA,
+
     x = max(as.Date(data$target_end_date)) + (1:num_horizons) * 7
   )
   view_options <- reactiveValues()
   
   baseline <- reactiveVal()
   
-  
-  mod_plotly_test_server("test")
 
   mod_view_options_server("view_options", view_options = view_options,
+                          forecast = forecast,
                           selection_vars = golem::get_golem_options("selection_vars"), 
                           observations = golem::get_golem_options("data"))
+  mod_adjust_forecast_server("adjust_forecast", forecast = forecast, 
+                             observations = observations, 
+                             view_options = view_options, 
+                             forecast_quantiles = forecast_quantiles,
+                             selection_vars = golem::get_golem_options("selection_vars"),
+                             num_horizons = num_horizons, 
+                             baseline = baseline, 
+                             user_management)
+  
   mod_forecast_plot_server(id = "forecast_plot",
                            observations = golem::get_golem_options("data"),
                            forecast = forecast,
@@ -162,18 +170,11 @@ app_server <- function( input, output, session ) {
                            selection_vars = golem::get_golem_options("selection_vars"),
                            view_options = view_options, 
                            forecast_quantiles = forecast_quantiles)
-  mod_adjust_forecast_server("adjust_forecast", forecast = forecast, 
-                             observations = observations, 
-                             view_options = view_options, 
-                             forecast_quantiles = forecast_quantiles,
-                             selection_vars = golem::get_golem_options("selection_vars"),
-                             num_horizons = num_horizons, 
-                             baseline = baseline)
-  
-  
-  observe({print(event_data("plotly_relayout", source = "A"))})
   
   mod_display_external_info_server("cfr", "https://ourworldindata.org/coronavirus-data-explorer?zoomToSelection=true&time=2020-03-14..latest&country=POL~DEU&region=World&cfrMetric=true&interval=total&aligned=true&hideControls=true&smoothing=0&pickerMetric=location&pickerSort=asc")
+
+  mod_account_details_server("account_details", user_management)
+  mod_past_performance_server("past_performance", user_management)
   
   
 }
