@@ -8,7 +8,9 @@
 #' @importFrom golem with_golem_options
 run_app <- function(
   data,
+  first_forecast_date = "auto",
   horizons = 4,
+  horizon_interval = 7,
   submission_date = NA,
   selection_vars = c("location", "target_type"),
   forecast_quantiles = c(0.01, 0.025, seq(0.05, 0.95, 0.05), 0.975, 0.99),
@@ -26,7 +28,9 @@ run_app <- function(
       server = app_server
     ), 
     golem_opts = c(list(data = data, 
+                        first_forecast_date = first_forecast_date,
                         horizons = horizons,
+                        horizon_interval = horizon_interval,
                         forecast_quantiles = forecast_quantiles,
                         selection_vars = selection_vars, 
                         google_account_mail = google_account_mail, 

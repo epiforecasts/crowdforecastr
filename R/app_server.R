@@ -132,7 +132,8 @@ app_server <- function( input, output, session ) {
   
   
   
-  
+  horizon_interval <- golem::get_golem_options("horizon_interval")
+  first_forecast_date <- golem::get_golem_options("first_forecast_date")
   
   forecast <- reactiveValues(
     median = rep(NA, num_horizons),
@@ -143,8 +144,15 @@ app_server <- function( input, output, session ) {
     
     distribution = NA,
 
-    x = max(as.Date(data$target_end_date)) + (1:num_horizons) * 7
+    x = rep(NA, num_horizons)
   )
+  
+  if (first_forecast_date == "auto") {
+    forecast$x <- max(as.Date(data$target_end_date)) + (1:num_horizons) * horizon_interval
+  } else {
+    forecast$x <- as.Date(first_forecast_date) + (0:(num_horizons - 1)) * horizon_interval
+  }
+  
   view_options <- reactiveValues()
   
   baseline <- reactiveVal()

@@ -72,19 +72,19 @@ mod_forecast_plot_server <- function(id, observations,
                   name = 'forecast', mode = 'lines', color = I("dark green")) %>%
         layout(xaxis = list(range = c(min(obs_filtered$target_end_date),
                                       max(forecast$x) + 5))) %>%
-        layout(yaxis = list(hoverformat = '0f', rangemode = "tozero")) %>%
+        layout(yaxis = list(hoverformat = '.2r', rangemode = "tozero")) %>%
         layout(shapes = c(circles_pred)) %>%
         layout(title = "Observations and Forecast") %>%
         layout(legend = list(orientation = 'h')) %>%
         # config(edits = list(shapePosition = TRUE))
         config(editable = TRUE)
 
-      # add ribbons for the selected prediction intervals
+      # add ribbons around predictions for the selected prediction intervals
       for (interval in view_options$desired_intervals) {
         
         int <- sub(pattern = "%", replacement = "", x = interval) %>%
           as.numeric()
-
+        
         lower_quantile <- round((100 - int) / (2 * 100), 3)
         upper_quantile <- 1 - lower_quantile
         
@@ -106,7 +106,39 @@ mod_forecast_plot_server <- function(id, observations,
                       name = paste0(interval, "% prediction interval"),
                       line = list(color = "transparent"),
                       fillcolor = paste0(color, (1 - int/100 + 0.1), ")'"))
+        
+      }
+      
+      
+      # add ribbons around the true data if specified. 
 
+      colnames <- colnames(observations)
+      if (any(grepl("upper", colnames)) && any(grepl("lower", colnames))) {
+        print("hello")
+        
+        for (interval in view_options$desired_intervals) {
+          
+          int <- sub(pattern = "%", replacement = "", x = interval) %>%
+            as.numeric()
+
+          # select column name that has the interval as well as "upper" or "lower"
+          # in its name
+          lower_bound <- obs_filtered[[colnames[grepl("lower", colnames) & grepl(int, colnames)]]]
+          upper_bound <- obs_filtered[[colnames[grepl("upper", colnames) & grepl(int, colnames)]]] 
+          
+          # plot if both vectors exist
+          if (length(lower_bound) == length(upper_bound) && length(upper_bound) > 0) {
+            color <- "'rgba(255, 127, 14," #orange
+            color <- "'rgba(44, 160, 44," #other green
+            # color <- "'rgba(26,150,65," # green
+            
+            plot <- plot %>%
+              add_ribbons(x = obs_filtered$target_end_date, ymin = lower_bound, ymax = upper_bound,
+                          name = paste0(interval, "% uncertainty interval"),
+                          line = list(color = "transparent"),
+                          fillcolor = paste0(color, (1 - int/100 + 0.1), ")'"))
+          }
+        }
       }
       
       
@@ -118,7 +150,6 @@ mod_forecast_plot_server <- function(id, observations,
       plot
     })
     
-    print("2.1")
     # update x/y reactive values in response to changes in shape anchors
     observeEvent(event_data("plotly_relayout"),
                  {
