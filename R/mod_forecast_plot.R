@@ -72,7 +72,7 @@ mod_forecast_plot_server <- function(id, observations,
                   name = 'forecast', mode = 'lines', color = I("dark green")) %>%
         layout(xaxis = list(range = c(min(obs_filtered$target_end_date),
                                       max(forecast$x) + 5))) %>%
-        layout(yaxis = list(hoverformat = '.2r', rangemode = "tozero")) %>%
+        layout(yaxis = list(hoverformat = '.2f', rangemode = "tozero")) %>%
         layout(shapes = c(circles_pred)) %>%
         layout(title = "Observations and Forecast") %>%
         layout(legend = list(orientation = 'h')) %>%

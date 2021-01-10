@@ -115,14 +115,14 @@ app_server <- function( input, output, session ) {
                    }
                  })
     mod_user_management_create_user_server("create_user_form", 
-                                           user_management)
+                                           user_management, user_data, 
+                                           user_data_sheet_id)
     
     
-    # if (!is.null(path_past_forecasts)) {
-    #   user_management$past_forecasts <- load_past_forecasts(path_past_forecasts) %>%
-    #     dplyr::filter(model == )
-    #     
-    # }
+    past_forecasts <- golem::get_golem_options("past_forecasts")
+    if (!is.null(past_forecasts)) {
+      user_management$past_forecasts <- past_forecasts 
+    }
   }
   
   
@@ -153,7 +153,12 @@ app_server <- function( input, output, session ) {
     forecast$x <- as.Date(first_forecast_date) + (0:(num_horizons - 1)) * horizon_interval
   }
   
-  view_options <- reactiveValues()
+  view_options <- reactiveValues(
+    # change_view = NULL, # trigger that changes whenever the target selection changes
+    desired_intervals = NULL, 
+    weeks_to_show = NULL, 
+    plot_scale = NULL
+  )
   
   baseline <- reactiveVal()
   
@@ -179,8 +184,15 @@ app_server <- function( input, output, session ) {
                            view_options = view_options, 
                            forecast_quantiles = forecast_quantiles)
   
+  
+  mod_display_external_info_server("our_world_in_data_dashboard", "https://ourworldindata.org/coronavirus-data-explorer?country=DEU~POL&region=World&casesMetric=true&interval=total&perCapita=true&smoothing=0&pickerMetric=location&pickerSort=asc")
+  
   mod_display_external_info_server("cfr", "https://ourworldindata.org/coronavirus-data-explorer?zoomToSelection=true&time=2020-03-14..latest&country=POL~DEU&region=World&cfrMetric=true&interval=total&aligned=true&hideControls=true&smoothing=0&pickerMetric=location&pickerSort=asc")
-
+  
+  mod_display_external_info_server("positivity_rate", "https://ourworldindata.org/coronavirus-data-explorer?yScale=log&zoomToSelection=true&minPopulationFilter=1000000&time=earliest..latest&country=POL~DEU&region=World&casesMetric=true&interval=smoothed&aligned=true&hideControls=true&smoothing=7&pickerMetric=location&pickerSort=asc")
+  
+  mod_display_external_info_server("daily_testing", "https://ourworldindata.org/grapher/daily-tests-per-thousand-people-smoothed-7-day?tab=chart&stackMode=absolute&time=earliest..latest&country=DEU~POL&region=World")
+  
   mod_account_details_server("account_details", user_management)
   mod_past_performance_server("past_performance", user_management)
   

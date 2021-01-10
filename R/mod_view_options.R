@@ -31,7 +31,10 @@ mod_view_options_ui <- function(id, selection_vars, observations){
                     numericInput(inputId = ns("weeks_to_show"), 
                                  label = "No. of weeks to show",
                                  min = 1,
-                                 value = 12))
+                                 value = 12), 
+                    br(),
+                    "To adapt forecast as well, Press 'apply baseline' below")
+             
              ),
     
     shinyWidgets::prettyRadioButtons(inputId = ns("plot_scale"),
@@ -146,6 +149,7 @@ mod_view_options_selection_field_server <- function(id, selection_var,
     observeEvent(input$selection, {
       view_options[[selection_var]] <- input$selection
       forecast[[selection_var]] <- input$selection
+      print(forecast[[selection_var]])
     })
     
     # also update the numeric whenever the view_options change. This change can 

@@ -10,7 +10,8 @@
 mod_past_performance_ui <- function(id){
   ns <- NS(id)
   tagList(
-    h4("Performance tracking is not available yet")
+    h4("Past Performance will be coming shortly!"),
+    plotOutput(ns("past_forecasts_plot"))
   )
 }
     
@@ -23,9 +24,19 @@ mod_past_performance_server <- function(id, user_management){
     
     observeEvent(user_management$past_forecasts, {
       
-      if (is.null(user_management$past_forecasts)) {
+      if (!is.null(user_management$past_forecasts)) {
         
         
+        output$past_forecasts_plot <- renderPlot({
+          
+          # user_forecasts <- user_management$past_forecasts %>%
+          #   dplyr::filter(model == user_management$current_user_data$board_name)
+          # 
+          # plot <- scoringutils::plot_predictions(user_management$past_forecasts, 
+          #                                        x = "target_end_date") 
+          # 
+          # plot
+        })
         
       }
       

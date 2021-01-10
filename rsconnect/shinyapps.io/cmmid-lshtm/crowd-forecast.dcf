@@ -1,0 +1,12 @@
+name: crowd-forecast
+title: crowd-forecast
+username:
+account: cmmid-lshtm
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 3233319
+bundleId: 4079274
+url: https://cmmid-lshtm.shinyapps.io/crowd-forecast/
+when: 1610302513.91651
+asMultiple: FALSE
+asStatic: FALSE

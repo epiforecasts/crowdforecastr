@@ -184,16 +184,18 @@ mod_adjust_forecast_server <- function(id, num_horizons, observations, forecast,
                    print("submission pressed")
                    # error handling
                    # expand this at some point to handle both conditions
-                   if (!is.na(forecast$median) && all(forecast$median == forecast$median_latent)) {
+                   if (!is.na(forecast$median) && all(forecast$median == forecast$median_latent) && all(forecast$width == forecast$width_latent)) {
                      mismatch <- FALSE
                    } else {
                      mismatch <- TRUE
                    }
-
                    
                    if (mismatch) {
                      showNotification("Your forecasts don't match your inputs yet. Please press 'update' for all changes to take effect and submit again.", type = "error")
-                   } else {
+                   } else if (any(diff(forecast$width) <= 0)) {
+                     showNotification("Your uncertainty should be increasing over time. Please increase the width parameter for later forecast dates.", type = "error")
+                     }
+                   else {
                      # collect data in submission sheet
                      current_user_data <- user_management$current_user_data
                      submissions <- data.frame(forecaster_id = current_user_data$forecaster_id, 
@@ -219,14 +221,14 @@ mod_adjust_forecast_server <- function(id, num_horizons, observations, forecast,
                                                # chosen_baseline_model = input$baseline_model,
                                                # comments = comments(),
                                                
-                                               submission_date = golem::get_golem_options("submission_date"))
+                                               submission_date = as.Date(golem::get_golem_options("submission_date")))
                      
                      # add information about selection variables to submission sheet
-                     lapply(selection_vars, 
-                            FUN = function(selection_var) {
-                              submissions[[selection_var]] <- forecast[[selection_var]]
-                            })
+                     for (selection_var in selection_vars) {
+                       submissions[[selection_var]] <- forecast[[selection_var]]
+                     }
                      
+                     print(submissions)
 
                      
                      print("submitting")
@@ -239,10 +241,7 @@ mod_adjust_forecast_server <- function(id, num_horizons, observations, forecast,
                      n <- length(selection_vars)
                      reverse_selection <- selection_vars[n:1]
                      for (selection_var in reverse_selection) {
-                       
-                       print(selection_var)
-                       print(forecast[[selection_var]])
-                       
+
                        available_choices <- unique(observations[[selection_var]])
                        num_choices <- length(available_choices)
                        index_current_selection <- which(forecast[[selection_var]] == available_choices)

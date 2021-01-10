@@ -16,7 +16,7 @@ run_app(
   forecast_sheet_id,
   user_data_sheet_id,
   user_management = TRUE,
-  path_past_forecasts = NULL,
+  past_forecasts = NULL,
   app_up_to_date = TRUE,
   ...
 )

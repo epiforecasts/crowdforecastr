@@ -16,7 +16,7 @@ app_ui <- function(request) {
     
     dashboardPage(
       # think about where to put a tooltip toggle button
-      dashboardHeader(title = "crowdforecastr test"),
+      dashboardHeader(title = "Covid-19 Crowd Forecast"),
       # tags$li(class = "dropdown", style = "padding: 8px;",
       #         shinyauthr::logoutUI("logout")),
       dashboardSidebar(
@@ -59,15 +59,17 @@ app_ui <- function(request) {
                              
                       )
                     ),
-                    shiny::fluidRow(
-                      shinydashboard::box(title = "Additional Information", 
-                                          status = "primary", 
-                                          solidHeader = TRUE,
-                                          mod_display_external_info_ui("cfr"),
-                                          width = 12)
-                    )
                     
-                    
+                    shinydashboard::box(title = "Additional Information", 
+                                        status = "primary", 
+                                        solidHeader = TRUE,
+                                        tabsetPanel(type = "tabs", 
+                                                    id = "additional_info",
+                                                    tabPanel("Overview Information", mod_display_external_info_ui("our_world_in_data_dashboard")),
+                                                    tabPanel("Case Fatality Rate", mod_display_external_info_ui("cfr")), 
+                                                    tabPanel("Positivity Rate", mod_display_external_info_ui("positivity_rate")), 
+                                                    tabPanel("Daily Testing Performed", mod_display_external_info_ui("daily_testing"))),
+                                        width = 12)
                     
                   )
           ),

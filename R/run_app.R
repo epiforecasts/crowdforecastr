@@ -18,7 +18,7 @@ run_app <- function(
   forecast_sheet_id, 
   user_data_sheet_id,
   user_management = TRUE,
-  path_past_forecasts = NULL,
+  past_forecasts = NULL,
   app_up_to_date = TRUE,
   ...
 ) {
@@ -38,7 +38,8 @@ run_app <- function(
                         user_data_sheet_id = user_data_sheet_id, 
                         user_management = user_management,
                         submission_date = submission_date,
-                        app_up_to_date = app_up_to_date), 
+                        app_up_to_date = app_up_to_date, 
+                        past_forecasts = past_forecasts), 
                    list(...))
   )
 }

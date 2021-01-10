@@ -47,7 +47,8 @@ mod_user_management_create_user_ui <- function(id){
 #'
 #' @noRd 
 mod_user_management_create_user_server <- function(id, user_management, 
-                                                   user_data){
+                                                   user_data, 
+                                                   user_data_sheet_id){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
  

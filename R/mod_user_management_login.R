@@ -15,6 +15,7 @@ mod_user_management_login_ui <- function(id){
     br(), 
     fluidRow(column(12, 
                     style = 'padding-left: 15px; padding-right: 15px',
+                    HTML("See the performance board <a href = 'https://epiforecasts.io/covid-german-forecasts'>here</a>"),
                     h4("Note: If the app doesn't fit on your screen we highly recommend you zoom out a bit"), 
                     h5("If you just want to take a look, log in with username and password 'test'"))),
     br(),
