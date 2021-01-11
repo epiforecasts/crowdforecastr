@@ -78,6 +78,42 @@ mod_forecast_plot_server <- function(id, observations,
         layout(legend = list(orientation = 'h')) %>%
         # config(edits = list(shapePosition = TRUE))
         config(editable = TRUE)
+      
+      # add ribbons around the true data if specified. 
+      colnames <- colnames(observations)
+      if (any(grepl("upper", colnames)) && any(grepl("lower", colnames))) {
+        print("hello")
+        
+        for (interval in view_options$desired_intervals) {
+          
+          int <- sub(pattern = "%", replacement = "", x = interval) %>%
+            as.numeric()
+          
+          # select column name that has the interval as well as "upper" or "lower"
+          # in its name
+          index_lower <- grepl("lower", colnames) & grepl(int, colnames)
+          index_upper <- grepl("upper", colnames) & grepl(int, colnames)
+          
+          print(index_lower)
+          
+          if (any(index_lower) && any(index_upper)) {
+            lower_bound <- obs_filtered[[colnames[index_lower]]]
+            upper_bound <- obs_filtered[[colnames[index_upper]]]
+            
+            # color <- "'rgba(255, 127, 14," #orange
+            # color <- "'rgba(44, 160, 44," #other green
+            # color <- "'rgba(26,150,65," # green
+            color <- "'rgba(31, 119, 180," # default blue color
+            
+            plot <- plot %>%
+              add_ribbons(x = obs_filtered$target_end_date, ymin = lower_bound, ymax = upper_bound,
+                          name = paste0(interval, " uncertainty interval"),
+                          line = list(color = "transparent"),
+                          fillcolor = paste0(color, (1 - int/100 + 0.1)/3, ")'"))
+          }
+        }
+      }
+      
 
       # add ribbons around predictions for the selected prediction intervals
       for (interval in view_options$desired_intervals) {
@@ -110,37 +146,7 @@ mod_forecast_plot_server <- function(id, observations,
       }
       
       
-      # add ribbons around the true data if specified. 
-
-      colnames <- colnames(observations)
-      if (any(grepl("upper", colnames)) && any(grepl("lower", colnames))) {
-        print("hello")
-        
-        for (interval in view_options$desired_intervals) {
-          
-          int <- sub(pattern = "%", replacement = "", x = interval) %>%
-            as.numeric()
-
-          # select column name that has the interval as well as "upper" or "lower"
-          # in its name
-          lower_bound <- obs_filtered[[colnames[grepl("lower", colnames) & grepl(int, colnames)]]]
-          upper_bound <- obs_filtered[[colnames[grepl("upper", colnames) & grepl(int, colnames)]]] 
-          
-          # plot if both vectors exist
-          if (length(lower_bound) == length(upper_bound) && length(upper_bound) > 0) {
-            # color <- "'rgba(255, 127, 14," #orange
-            # color <- "'rgba(44, 160, 44," #other green
-            # color <- "'rgba(26,150,65," # green
-            color <- "'rgb(31, 119, 180," # default blue color
-            
-            plot <- plot %>%
-              add_ribbons(x = obs_filtered$target_end_date, ymin = lower_bound, ymax = upper_bound,
-                          name = paste0(interval, "% uncertainty interval"),
-                          line = list(color = "transparent"),
-                          fillcolor = paste0(color, ((1 - int/100)/2 + 0.5), ")'"))
-          }
-        }
-      }
+      
       
       
       # turn plot into log scale if log is selected by user
@@ -159,7 +165,7 @@ mod_forecast_plot_server <- function(id, observations,
                    if (length(shape_anchors) != 2) return()
                    row_index <- unique(readr::parse_number(names(shape_anchors)) + 1)
                    y_coord <- as.numeric(shape_anchors[2])
-                   forecast$median[row_index] <- round(y_coord)
+                   forecast$median[row_index] <- round(y_coord, 2)
                  })
     
     
