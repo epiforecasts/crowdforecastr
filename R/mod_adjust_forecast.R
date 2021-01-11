@@ -250,7 +250,7 @@ mod_adjust_forecast_server <- function(id, num_horizons, observations, forecast,
                        if (index_current_selection < num_choices) {
                          # change variable stored in forecasts. This will lead to an update in the view_options_module
                          forecast[[selection_var]] <- available_choices[index_current_selection + 1]
-                         showNotification("Thank you for your submissions. Here is the next data set!", type = "message")
+                         showNotification("Thank you for your submissions. Here is the next data set. Press 'apply' to apply the baseline forecast", type = "message")
                          print(forecast[[selection_var]])
                          break
                        } else if (index_current_selection == num_choices) {

@@ -128,15 +128,16 @@ mod_forecast_plot_server <- function(id, observations,
           
           # plot if both vectors exist
           if (length(lower_bound) == length(upper_bound) && length(upper_bound) > 0) {
-            color <- "'rgba(255, 127, 14," #orange
-            color <- "'rgba(44, 160, 44," #other green
+            # color <- "'rgba(255, 127, 14," #orange
+            # color <- "'rgba(44, 160, 44," #other green
             # color <- "'rgba(26,150,65," # green
+            color <- "'rgb(31, 119, 180," # default blue color
             
             plot <- plot %>%
               add_ribbons(x = obs_filtered$target_end_date, ymin = lower_bound, ymax = upper_bound,
                           name = paste0(interval, "% uncertainty interval"),
                           line = list(color = "transparent"),
-                          fillcolor = paste0(color, (1 - int/100 + 0.1), ")'"))
+                          fillcolor = paste0(color, ((1 - int/100)/2 + 0.5), ")'"))
           }
         }
       }
