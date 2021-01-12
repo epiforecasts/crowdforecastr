@@ -71,7 +71,9 @@ mod_forecast_plot_server <- function(id, observations,
                   y = forecast$median, type = "scatter",
                   name = 'forecast', mode = 'lines', color = I("dark green")) %>%
         layout(xaxis = list(range = c(min(obs_filtered$target_end_date),
-                                      max(forecast$x) + 5))) %>%
+                                      max(forecast$x) + 5), 
+                            title = ""), 
+               yaxis = list(title = "")) %>%
         layout(yaxis = list(hoverformat = '.2f', rangemode = "tozero")) %>%
         layout(shapes = c(circles_pred)) %>%
         layout(title = "Observations and Forecast") %>%
@@ -109,7 +111,7 @@ mod_forecast_plot_server <- function(id, observations,
               add_ribbons(x = obs_filtered$target_end_date, ymin = lower_bound, ymax = upper_bound,
                           name = paste0(interval, " uncertainty interval"),
                           line = list(color = "transparent"),
-                          fillcolor = paste0(color, (1 - int/100 + 0.1)/3, ")'"))
+                          fillcolor = paste0(color, max((1 - int/100 + 0.1)/7, 0.1), ")'"))
           }
         }
       }
@@ -139,7 +141,7 @@ mod_forecast_plot_server <- function(id, observations,
         
         plot <- plot %>%
           add_ribbons(x = forecast$x, ymin = lower_bound, ymax = upper_bound,
-                      name = paste0(interval, "% prediction interval"),
+                      name = paste(interval, "prediction interval"),
                       line = list(color = "transparent"),
                       fillcolor = paste0(color, (1 - int/100 + 0.1), ")'"))
         

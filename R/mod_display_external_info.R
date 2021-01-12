@@ -11,7 +11,9 @@ mod_display_external_info_ui <- function(id){
   ns <- NS(id)
   tagList(
  
-    htmlOutput(outputId = ns("external_data"))
+    htmlOutput(outputId = ns("external_data")),
+    
+    p("This data is provided by Our World in Data. Data sources may differ and information must be treated carefully. Usually, dates are moved by a day when compared to our sources")
     
   )
 }

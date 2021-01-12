@@ -7,6 +7,7 @@
 #' @importFrom shiny shinyApp
 #' @importFrom golem with_golem_options
 run_app <- function(
+  app_title = "Crowd Forecast",
   data,
   first_forecast_date = "auto",
   horizons = 4,
@@ -27,7 +28,8 @@ run_app <- function(
       ui = app_ui, 
       server = app_server
     ), 
-    golem_opts = c(list(data = data, 
+    golem_opts = c(list(app_title = app_title, 
+                        data = data, 
                         first_forecast_date = first_forecast_date,
                         horizons = horizons,
                         horizon_interval = horizon_interval,

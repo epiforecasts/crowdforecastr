@@ -136,6 +136,7 @@ mod_adjust_forecast_server <- function(id, num_horizons, observations, forecast,
       
       # turn latent values into values that are actually stored
       # this should also automatically update any numeric inputs
+      forecast$distribution <- input$distribution
       forecast$median <- forecast$median_latent
       forecast$width <- forecast$width_latent
       
@@ -147,7 +148,7 @@ mod_adjust_forecast_server <- function(id, num_horizons, observations, forecast,
     # something is updated) --> upadte the stored forecasting in accordance
     # to the selected forecast distribution
     # not quite sure whether this logic should happen somewhere else?
-    observeEvent(c(forecast$median, forecast$width), {
+    observeEvent(c(forecast$median, forecast$width, input$distribution), {
       
       
       # THIS IS BUSINESS LOGIC THAT SHOULD HAPPEN SOMEWHERE OUTSIDE

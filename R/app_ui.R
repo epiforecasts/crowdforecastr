@@ -16,7 +16,7 @@ app_ui <- function(request) {
     
     dashboardPage(
       # think about where to put a tooltip toggle button
-      dashboardHeader(title = "Covid-19 Crowd Forecast"),
+      dashboardHeader(title = golem::get_golem_options("app_title")),
       # tags$li(class = "dropdown", style = "padding: 8px;",
       #         shinyauthr::logoutUI("logout")),
       dashboardSidebar(
@@ -68,7 +68,8 @@ app_ui <- function(request) {
                                                     tabPanel("Overview Information", mod_display_external_info_ui("our_world_in_data_dashboard")),
                                                     tabPanel("Case Fatality Rate", mod_display_external_info_ui("cfr")), 
                                                     tabPanel("Positivity Rate", mod_display_external_info_ui("positivity_rate")), 
-                                                    tabPanel("Daily Testing Performed", mod_display_external_info_ui("daily_testing"))),
+                                                    tabPanel("Daily Testing Performed", mod_display_external_info_ui("daily_testing")), 
+                                                    tabPanel("Stringency Measures", mod_display_external_info_ui("gov_stringency"))),
                                         width = 12)
                     
                   )
