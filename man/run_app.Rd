@@ -19,6 +19,8 @@ run_app(
   user_management = TRUE,
   past_forecasts = NULL,
   app_up_to_date = TRUE,
+  default_distribution = "log-normal",
+  force_increasing_uncertainty = TRUE,
   ...
 )
 }

@@ -32,7 +32,7 @@ mod_adjust_forecast_ui <- function(id, num_horizons = 4){
                             "cubic-normal",
                             "fifth-power-normal",
                             "seventh-power-normal"),
-                selected = "log-normal"),
+                selected = golem::get_golem_options("default_distribution")),
     
     lapply(1:num_horizons,
            FUN = function(i) {
@@ -193,7 +193,7 @@ mod_adjust_forecast_server <- function(id, num_horizons, observations, forecast,
                    
                    if (mismatch) {
                      showNotification("Your forecasts don't match your inputs yet. Please press 'update' for all changes to take effect and submit again.", type = "error")
-                   } else if (any(diff(forecast$width) <= 0)) {
+                   } else if (golem::get_golem_options("force_increasing_uncertainty") && any(diff(forecast$width) <= 0)) {
                      showNotification("Your uncertainty should be increasing over time. Please increase the width parameter for later forecast dates.", type = "error")
                      }
                    else {

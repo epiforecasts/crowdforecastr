@@ -21,6 +21,8 @@ run_app <- function(
   user_management = TRUE,
   past_forecasts = NULL,
   app_up_to_date = TRUE,
+  default_distribution = "log-normal",
+  force_increasing_uncertainty = TRUE,
   ...
 ) {
   with_golem_options(
@@ -41,7 +43,9 @@ run_app <- function(
                         user_management = user_management,
                         submission_date = submission_date,
                         app_up_to_date = app_up_to_date, 
-                        past_forecasts = past_forecasts), 
+                        past_forecasts = past_forecasts, 
+                        default_distribution = default_distribution, 
+                        force_increasing_uncertainty = force_increasing_uncertainty), 
                    list(...))
   )
 }
