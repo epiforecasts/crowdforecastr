@@ -6,7 +6,7 @@
 #' @importFrom googlesheets4 gs4_auth read_sheet
 #' @importFrom googledrive drive_auth drive_token
 #' @import shinyauthr
-#' @import shinyalert
+#' @importFrom shinyalert useShinyalert closeAlert
 #' @noRd
 app_server <- function( input, output, session ) {
   
