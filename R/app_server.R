@@ -19,12 +19,14 @@ app_server <- function( input, output, session ) {
   forecast_sheet_id <- golem::get_golem_options("forecast_sheet_id")
   use_user_management <- golem::get_golem_options("user_management")
   observations <- golem::get_golem_options("data")
+  horizon_interval <- golem::get_golem_options("horizon_interval")
+  first_forecast_date <- golem::get_golem_options("first_forecast_date")
   
   # assign user_management so it can be passed around even if not used
   user_management <- NULL
   
+  # if user management is used, define all necessary elements and server functions
   if (use_user_management) {
-    
     # manage google authentification
     options(gargle_oauth_cache = ".secrets")
     googledrive::drive_auth(cache = ".secrets", email = golem::get_golem_options("google_account_mail"))
@@ -32,20 +34,11 @@ app_server <- function( input, output, session ) {
     
     # load user data
     user_data_sheet_id <- golem::get_golem_options("user_data_sheet_id")
-    user_data <- attempt::attempt(
-      googlesheets4::read_sheet(ss = user_data_sheet_id)
+    user_data <- try_and_wait(
+      googlesheets4::read_sheet(ss = user_data_sheet_id), 
+      message = "We are trying to connect to the user data base."
     )
-    while (attempt::is_try_error(user_data)){
-      shinyalert::shinyalert(type = "warning", 
-                             text = "We are trying to connect to the user data base. This sometimes fails when too many requests are sent at the same time. We'll keep retrying every 25 seconds - usually this shouldn't take too long. Sorry for the delay. Thanks for putting your time and effort into this, we very much appreciate it!", closeOnClickOutside = TRUE)
-      Sys.sleep(25)
-      user_data <- attempt::attempt(
-        googlesheets4::read_sheet(ss = user_data_sheet_id)
-      )
-      shinyalert::closeAlert()
-    } 
-    
-    
+      
     # store everything needed for user management in a list
     user_management <- reactiveValues(
       user_data_sheet_id = user_data_sheet_id,
@@ -69,9 +62,6 @@ app_server <- function( input, output, session ) {
       user_management$past_forecasts <- past_forecasts 
     }
   }
-  
-  horizon_interval <- golem::get_golem_options("horizon_interval")
-  first_forecast_date <- golem::get_golem_options("first_forecast_date")
   
   forecast <- reactiveValues(
     # values that can be submitted

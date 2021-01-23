@@ -234,23 +234,12 @@ mod_adjust_forecast_server <- function(id, num_horizons, observations, forecast,
                      
                      print("submitting")
                      # append data to google sheet
-                     try <- attempt::attempt(
+                     try_and_wait(
                        googlesheets4::sheet_append(data = submissions,
-                                                   ss = golem::get_golem_options("forecast_sheet_id"))
+                                                   ss = golem::get_golem_options("forecast_sheet_id")), 
+                       message = "We are trying to connect to the submission data base."
                      )
-                     
-                     while (attempt::is_try_error(try)){
-                       
-                       shinyalert::shinyalert(type = "warning", 
-                                              text = "We are trying to connect to the submission data base. This sometimes fails when too many requests are sent at the same time. We'll keep retrying every 25 seconds - usually this shouldn't take too long. Sorry for the delay. Thanks for putting your time and effort into this, we very much appreciate it!", closeOnClickOutside = TRUE)
-                       Sys.sleep(25)
-                       try <- attempt::attempt(
-                         googlesheets4::sheet_append(data = submissions,
-                                                     ss = golem::get_golem_options("forecast_sheet_id"))
-                       )
-                       shinyalert::closeAlert()
-                     } 
-                     
+                  
                      # move to the next forecast
                      # go through the selection variables in a backwards order
                      n <- length(selection_vars)
@@ -268,7 +257,7 @@ mod_adjust_forecast_server <- function(id, num_horizons, observations, forecast,
                          shinyalert::shinyalert(type = "success", 
                                                 text = "Thank you for your submissions. Here is the next data set. Press 'apply' to apply the baseline forecast", 
                                                 closeOnClickOutside = TRUE, 
-                                                timer = 2000)
+                                                timer = 2500)
                          break
                        } else if (index_current_selection == num_choices) {
                          # if the last choice was selected, change back to the first choice

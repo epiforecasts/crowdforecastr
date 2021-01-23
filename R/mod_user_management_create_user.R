@@ -110,8 +110,11 @@ mod_user_management_create_user_server <- function(id, user_management,
                                                        forecaster_id = generate_random_id(), 
                                                        board_name = create_leaderboard_name())
                        
-                       googlesheets4::sheet_append(data = current_user_data, 
-                                                   ss = user_data_sheet_id)
+                       try_and_wait(
+                         googlesheets4::sheet_append(data = current_user_data, 
+                                                     ss = user_data_sheet_id), 
+                         message = "We are trying to connect to the user data base."
+                       )
                        
                        user_management$current_user_data <- current_user_data
                        
