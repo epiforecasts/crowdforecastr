@@ -11,11 +11,6 @@
 #' @noRd
 app_server <- function( input, output, session ) {
   
-  # manage google authentification
-  options(gargle_oauth_cache = ".secrets")
-  googledrive::drive_auth(cache = ".secrets", email = golem::get_golem_options("google_account_mail"))
-  googlesheets4::gs4_auth(token = googledrive::drive_token())
-  
   # reassign some values for simplicity that were given as inputs by the user
   data <- golem::get_golem_options("data")
   num_horizons <- golem::get_golem_options("horizons")
@@ -25,18 +20,21 @@ app_server <- function( input, output, session ) {
   use_user_management <- golem::get_golem_options("user_management")
   observations <- golem::get_golem_options("data")
   
+  # assign user_management so it can be passed around even if not used
   user_management <- NULL
   
   if (use_user_management) {
+    # manage google authentification
+    options(gargle_oauth_cache = ".secrets")
+    googledrive::drive_auth(cache = ".secrets", email = golem::get_golem_options("google_account_mail"))
+    googlesheets4::gs4_auth(token = googledrive::drive_token())
+    
     # load user data
     user_data_sheet_id <- golem::get_golem_options("user_data_sheet_id")
     user_data <- attempt::attempt(
       googlesheets4::read_sheet(ss = user_data_sheet_id)
     )
-    
-    
     while (attempt::is_try_error(user_data)){
-      
       shinyalert::shinyalert(type = "warning", 
                              text = "We are trying to connect to the user data base. This sometimes fails when too many requests are sent at the same time. We'll keep retrying every 25 seconds - usually this shouldn't take too long. Sorry for the delay. Thanks for putting your time and effort into this, we very much appreciate it!", closeOnClickOutside = TRUE)
       Sys.sleep(25)
@@ -45,8 +43,6 @@ app_server <- function( input, output, session ) {
       )
       shinyalert::closeAlert()
     } 
-    
-    path_past_forecasts <- golem::get_golem_options("path_past_forecasts")
     
     # store everything needed for user management in a list
     user_management <- reactiveValues(
@@ -62,7 +58,6 @@ app_server <- function( input, output, session ) {
     
     # open login screen when appropriate
     observeEvent(user_management$open_login, {
-      
       if (user_management$open_login) {
         removeModal()
         showModal(modalDialog(
@@ -77,10 +72,7 @@ app_server <- function( input, output, session ) {
     
     # open screen with consent needed to create new user if appropriate
     observeEvent(user_management$open_new_user_consent, {
-      
-      
       if (user_management$open_new_user_consent) {
-        
         removeModal()
         showModal(modalDialog(
           tagList(
@@ -93,7 +85,7 @@ app_server <- function( input, output, session ) {
     mod_user_management_new_user_consent_server("create_new_user_consent", 
                                                 user_management)
 
-    
+    # open form to create new user when appropriate
     observeEvent(user_management$open_create_user_form, 
                  {
                    if (user_management$open_create_user_form) {
@@ -121,28 +113,31 @@ app_server <- function( input, output, session ) {
   first_forecast_date <- golem::get_golem_options("first_forecast_date")
   
   forecast <- reactiveValues(
+    # values that can be submitted
     median = rep(NA, num_horizons),
     width = rep(NA, num_horizons),
-    
+    # latent values that store changes in numeric input, without direct effect
     median_latent = rep(NA, num_horizons),
     width_latent = rep(NA, num_horizons),
-    
+    # chosen forecast distribution
     distribution = NA,
-
+    # dates for which a forecast is made
     x = rep(NA, num_horizons),
-    
+    # store a list + string that keep track of which combination of
+    # selection_vars is currently selected
     selection_list = list(),
     selected_combination = NULL
   )
   
+  # set the forecast dates depending on the first forecast date
   if (first_forecast_date == "auto") {
     forecast$x <- max(as.Date(data$target_end_date)) + (1:num_horizons) * horizon_interval
   } else {
     forecast$x <- as.Date(first_forecast_date) + (0:(num_horizons - 1)) * horizon_interval
   }
   
+  # store the currently selected view options. 
   view_options <- reactiveValues(
-    # change_view = NULL, # trigger that changes whenever the target selection changes
     desired_intervals = NULL, 
     weeks_to_show = NULL, 
     plot_scale = NULL
@@ -151,6 +146,7 @@ app_server <- function( input, output, session ) {
   baseline <- reactiveVal()
   
 
+  # add various server logic functions
   mod_view_options_server("view_options", view_options = view_options,
                           forecast = forecast,
                           selection_vars = golem::get_golem_options("selection_vars"), 
@@ -163,7 +159,6 @@ app_server <- function( input, output, session ) {
                              num_horizons = num_horizons, 
                              baseline = baseline, 
                              user_management)
-  
   mod_forecast_plot_server(id = "forecast_plot",
                            observations = golem::get_golem_options("data"),
                            forecast = forecast,
@@ -171,22 +166,15 @@ app_server <- function( input, output, session ) {
                            selection_vars = golem::get_golem_options("selection_vars"),
                            view_options = view_options, 
                            forecast_quantiles = forecast_quantiles)
-  
-  
-  mod_display_external_info_server("our_world_in_data_dashboard", "https://ourworldindata.org/coronavirus-data-explorer?country=DEU~POL&region=World&casesMetric=true&interval=smoothed&smoothing=7&pickerMetric=location&pickerSort=asc")
-  
-  mod_display_external_info_server("cfr", "https://ourworldindata.org/coronavirus-data-explorer?zoomToSelection=true&time=2020-03-14..latest&country=POL~DEU&region=World&cfrMetric=true&interval=total&aligned=true&hideControls=true&smoothing=0&pickerMetric=location&pickerSort=asc")
-  
-  mod_display_external_info_server("positivity_rate", "https://ourworldindata.org/coronavirus-data-explorer?yScale=log&zoomToSelection=true&minPopulationFilter=1000000&time=earliest..latest&country=POL~DEU&region=World&casesMetric=true&interval=smoothed&aligned=true&hideControls=true&smoothing=7&pickerMetric=location&pickerSort=asc")
-  
-  mod_display_external_info_server("daily_testing", "https://ourworldindata.org/grapher/daily-tests-per-thousand-people-smoothed-7-day?tab=chart&stackMode=absolute&time=earliest..latest&country=DEU~POL&region=World")
- 
-  mod_display_external_info_server("gov_stringency", "https://ourworldindata.org/grapher/covid-stringency-index?tab=chart&stackMode=absolute&time=2020-01-22..latest&country=DEU~POL&region=Europe") 
-  
-  
-  
   mod_account_details_server("account_details", user_management)
   mod_past_performance_server("past_performance", user_management)
   
+  # add server logic for additional information. Maybe that could be packed into one
+  # user would then be able to decide how many of these to include, instead of them being hard coded here
+  mod_display_external_info_server("our_world_in_data_dashboard", "https://ourworldindata.org/coronavirus-data-explorer?country=DEU~POL&region=World&casesMetric=true&interval=smoothed&smoothing=7&pickerMetric=location&pickerSort=asc")
+  mod_display_external_info_server("cfr", "https://ourworldindata.org/coronavirus-data-explorer?zoomToSelection=true&time=2020-03-14..latest&country=POL~DEU&region=World&cfrMetric=true&interval=total&aligned=true&hideControls=true&smoothing=0&pickerMetric=location&pickerSort=asc")
+  mod_display_external_info_server("positivity_rate", "https://ourworldindata.org/coronavirus-data-explorer?yScale=log&zoomToSelection=true&minPopulationFilter=1000000&time=earliest..latest&country=POL~DEU&region=World&casesMetric=true&interval=smoothed&aligned=true&hideControls=true&smoothing=7&pickerMetric=location&pickerSort=asc")
+  mod_display_external_info_server("daily_testing", "https://ourworldindata.org/grapher/daily-tests-per-thousand-people-smoothed-7-day?tab=chart&stackMode=absolute&time=earliest..latest&country=DEU~POL&region=World")
+  mod_display_external_info_server("gov_stringency", "https://ourworldindata.org/grapher/covid-stringency-index?tab=chart&stackMode=absolute&time=2020-01-22..latest&country=DEU~POL&region=Europe") 
   
 }
