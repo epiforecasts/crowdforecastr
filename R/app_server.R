@@ -71,16 +71,6 @@ app_server <- function( input, output, session ) {
           ),
           footer = NULL, 
           size = "l"))
-        # shinyalert::shinyalert(title = "Welcome", 
-        #                        html = TRUE,
-        #                        text = 
-        #                          tagList(
-        #                            mod_user_management_login_ui("login")
-        #                          ), 
-        #                        type = "", 
-        #                        showConfirmButton = FALSE,
-        #                        size = "l", 
-        #                        immediate = TRUE)
       } 
     }, ignoreNULL = FALSE)
     mod_user_management_login_server("login", user_management, user_data)
@@ -98,19 +88,6 @@ app_server <- function( input, output, session ) {
           ), 
           footer = NULL, 
           size = "l"))
-        
-        # shinyalert::shinyalert(title = "Welcome", 
-        #                        html = TRUE,
-        #                        text = 
-        #                          tagList(
-        #                            
-        #                            mod_user_management_new_user_consent_ui("create_new_user"),
-        #                            h2("hello")
-        #                            # mod_user_management_new_user_ui("new_user")
-        #                          ), 
-        #                        type = "", 
-        #                        size = "l", 
-        #                        immediate = TRUE)
       }
     })
     mod_user_management_new_user_consent_server("create_new_user_consent", 
@@ -140,13 +117,6 @@ app_server <- function( input, output, session ) {
     }
   }
   
-  
-  
-  
-  
-  
-  
-  
   horizon_interval <- golem::get_golem_options("horizon_interval")
   first_forecast_date <- golem::get_golem_options("first_forecast_date")
   
@@ -159,7 +129,10 @@ app_server <- function( input, output, session ) {
     
     distribution = NA,
 
-    x = rep(NA, num_horizons)
+    x = rep(NA, num_horizons),
+    
+    selection_list = list(),
+    selected_combination = NULL
   )
   
   if (first_forecast_date == "auto") {

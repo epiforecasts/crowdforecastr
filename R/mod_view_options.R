@@ -140,16 +140,24 @@ mod_view_options_selection_field_ui <- function(id, selection_var, observations)
 #' elements in `selection_vars`
 #'
 #' @noRd 
-mod_view_options_selection_field_server <- function(id, selection_var, 
+mod_view_options_selection_field_server <- function(id, 
+                                                    selection_var, 
                                                     view_options, forecast){
   moduleServer( id, function(input, output, session){
     ns <- NS(id)
     
-    # update the view_options reactive list whenever an input changes
+    # update view options and also duplicate the data into forecast
     observeEvent(input$selection, {
       view_options[[selection_var]] <- input$selection
       forecast[[selection_var]] <- input$selection
-      print(forecast[[selection_var]])
+      # also update the selected combination string that is a unique identifier
+      # of the currently displayed selection by collecting all selections in a 
+      # vector and collapsing to a string. This is used as a label for the 
+      # y-axis of the main plot
+      forecast$selection_list[[selection_var]] <- input$selection
+      forecast$selected_combination <- paste(forecast$selection_list, 
+                                             collapse = " - ")
+      
     })
     
     # also update the numeric whenever the view_options change. This change can 
