@@ -13,6 +13,7 @@ app_ui <- function(request) {
     shinyjs::useShinyjs(),
     shinyalert::useShinyalert(),
     golem_add_external_resources(),
+
     
     dashboardPage(
       # think about where to put a tooltip toggle button

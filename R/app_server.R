@@ -24,6 +24,7 @@ app_server <- function( input, output, session ) {
   user_management <- NULL
   
   if (use_user_management) {
+    
     # manage google authentification
     options(gargle_oauth_cache = ".secrets")
     googledrive::drive_auth(cache = ".secrets", email = golem::get_golem_options("google_account_mail"))
@@ -44,6 +45,7 @@ app_server <- function( input, output, session ) {
       shinyalert::closeAlert()
     } 
     
+    
     # store everything needed for user management in a list
     user_management <- reactiveValues(
       user_data_sheet_id = user_data_sheet_id,
@@ -56,52 +58,11 @@ app_server <- function( input, output, session ) {
       open_create_user_form = FALSE
     )
     
-    # open login screen when appropriate
-    observeEvent(user_management$open_login, {
-      if (user_management$open_login) {
-        removeModal()
-        showModal(modalDialog(
-          tagList(
-            mod_user_management_login_ui("login")
-          ),
-          footer = NULL, 
-          size = "l"))
-      } 
-    }, ignoreNULL = FALSE)
-    mod_user_management_login_server("login", user_management, user_data)
-    
-    # open screen with consent needed to create new user if appropriate
-    observeEvent(user_management$open_new_user_consent, {
-      if (user_management$open_new_user_consent) {
-        removeModal()
-        showModal(modalDialog(
-          tagList(
-            mod_user_management_new_user_consent_ui("create_new_user_consent"),
-          ), 
-          footer = NULL, 
-          size = "l"))
-      }
-    })
-    mod_user_management_new_user_consent_server("create_new_user_consent", 
-                                                user_management)
-
-    # open form to create new user when appropriate
-    observeEvent(user_management$open_create_user_form, 
-                 {
-                   if (user_management$open_create_user_form) {
-                     removeModal()
-                     showModal(modalDialog(
-                       size = "l",
-                       title = "Create New User", 
-                       mod_user_management_create_user_ui("create_user_form"),
-                       footer = NULL
-                     ))
-                   }
-                 })
-    mod_user_management_create_user_server("create_user_form", 
-                                           user_management, user_data, 
-                                           user_data_sheet_id)
-    
+    # server functions to handle the user management
+    mod_user_management_server("user_management", 
+                               user_management, 
+                               user_data, 
+                               user_data_sheet_id)
     
     past_forecasts <- golem::get_golem_options("past_forecasts")
     if (!is.null(past_forecasts)) {
