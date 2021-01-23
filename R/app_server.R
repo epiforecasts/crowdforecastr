@@ -7,6 +7,7 @@
 #' @importFrom googledrive drive_auth drive_token
 #' @import shinyauthr
 #' @importFrom shinyalert useShinyalert closeAlert
+#' @importFrom attempt attempt is_try_error
 #' @noRd
 app_server <- function( input, output, session ) {
   
@@ -29,7 +30,21 @@ app_server <- function( input, output, session ) {
   if (use_user_management) {
     # load user data
     user_data_sheet_id <- golem::get_golem_options("user_data_sheet_id")
-    user_data <- googlesheets4::read_sheet(ss = user_data_sheet_id)
+    user_data <- attempt::attempt(
+      googlesheets4::read_sheet(ss = user_data_sheet_id)
+    )
+    
+    
+    while (attempt::is_try_error(user_data)){
+      
+      shinyalert::shinyalert(type = "warning", 
+                             text = "We are trying to connect to the user data base. This sometimes fails when too many requests are sent at the same time. We'll keep retrying every 25 seconds - usually this shouldn't take too long. Sorry for the delay. Thanks for putting your time and effort into this, we very much appreciate it!", closeOnClickOutside = TRUE)
+      Sys.sleep(25)
+      user_data <- attempt::attempt(
+        googlesheets4::read_sheet(ss = user_data_sheet_id)
+      )
+      shinyalert::closeAlert()
+    } 
     
     path_past_forecasts <- golem::get_golem_options("path_past_forecasts")
     

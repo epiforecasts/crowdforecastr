@@ -234,8 +234,22 @@ mod_adjust_forecast_server <- function(id, num_horizons, observations, forecast,
                      
                      print("submitting")
                      # append data to google sheet
-                     googlesheets4::sheet_append(data = submissions,
-                                                 ss = golem::get_golem_options("forecast_sheet_id"))
+                     try <- attempt::attempt(
+                       googlesheets4::sheet_append(data = submissions,
+                                                   ss = golem::get_golem_options("forecast_sheet_id"))
+                     )
+                     
+                     while (attempt::is_try_error(try)){
+                       
+                       shinyalert::shinyalert(type = "warning", 
+                                              text = "We are trying to connect to the submission data base. This sometimes fails when too many requests are sent at the same time. We'll keep retrying every 25 seconds - usually this shouldn't take too long. Sorry for the delay. Thanks for putting your time and effort into this, we very much appreciate it!", closeOnClickOutside = TRUE)
+                       Sys.sleep(25)
+                       try <- attempt::attempt(
+                         googlesheets4::sheet_append(data = submissions,
+                                                     ss = golem::get_golem_options("forecast_sheet_id"))
+                       )
+                       shinyalert::closeAlert()
+                     } 
                      
                      # move to the next forecast
                      # go through the selection variables in a backwards order
@@ -251,8 +265,10 @@ mod_adjust_forecast_server <- function(id, num_horizons, observations, forecast,
                        if (index_current_selection < num_choices) {
                          # change variable stored in forecasts. This will lead to an update in the view_options_module
                          forecast[[selection_var]] <- available_choices[index_current_selection + 1]
-                         showNotification("Thank you for your submissions. Here is the next data set. Press 'apply' to apply the baseline forecast", type = "message")
-                         print(forecast[[selection_var]])
+                         shinyalert::shinyalert(type = "success", 
+                                                text = "Thank you for your submissions. Here is the next data set. Press 'apply' to apply the baseline forecast", 
+                                                closeOnClickOutside = TRUE, 
+                                                timer = 2000)
                          break
                        } else if (index_current_selection == num_choices) {
                          # if the last choice was selected, change back to the first choice
@@ -261,7 +277,10 @@ mod_adjust_forecast_server <- function(id, num_horizons, observations, forecast,
                        }
                        # if we arrived at the the last iteration
                        if (selection_var == selection_vars[1]) {
-                         showNotification("Thank you for your submissions. If you completed all previous locations, you are done now!", type = "message")
+                         shinyalert::shinyalert(type = "success", 
+                                                title = "All submissions completed",
+                                                text = "Thank you for your submissions. If you completed all previous locations, you are done now!", 
+                                                closeOnClickOutside = TRUE)
                        }
                      }
                    }
