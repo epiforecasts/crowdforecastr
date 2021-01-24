@@ -103,8 +103,6 @@ mod_adjust_forecast_server <- function(id, num_horizons, observations, forecast,
     })
 
     observeEvent(input$apply_baseline, {
-      
-      
       filtered_observations <- filter_data_util(data = observations, 
                                                 view_options, 
                                                 selection_vars)
@@ -112,18 +110,8 @@ mod_adjust_forecast_server <- function(id, num_horizons, observations, forecast,
       baseline <- baseline_forecast(baseline = input$select_baseline, 
                                     filtered_observations = filtered_observations, 
                                     num_horizons = num_horizons)
-      
       forecast$median_latent <- baseline$median
       forecast$width_latent <- baseline$width
-      
-      # if (input$select_baseline == "zero baseline") {
-      #   zero_baseline(observations, num_horizons)
-      # }
-      # if (input$select_baseline == "constant baseline") {
-      #   forecast$median_latent <- constant_baseline(observations, num_horizons,
-      #                                               view_options, selection_vars)
-      # }
-      
       forecast$median <- forecast$median_latent
       forecast$width <- forecast$width_latent
       
@@ -139,9 +127,6 @@ mod_adjust_forecast_server <- function(id, num_horizons, observations, forecast,
       forecast$distribution <- input$distribution
       forecast$median <- forecast$median_latent
       forecast$width <- forecast$width_latent
-      
-      # update_values(id_prefix = "prediction_", forecast = forecast,
-      #               num_horizons = num_horizons, session = session)
     }, ignoreNULL = FALSE)
     
     # whenever either median or width changes (if points are dragged or 
@@ -205,23 +190,11 @@ mod_adjust_forecast_server <- function(id, num_horizons, observations, forecast,
                                                expert = current_user_data$expert,
                                                leader_board = current_user_data$appearboard,
                                                name_board = current_user_data$board_name,
-                                               # assigned_forecast_type = condition$initial,
-                                               # forecast_type = condition$current,
-                                               
                                                distribution = forecast$distribution,
-                                               
                                                median = forecast$median,
-                                               # lower_90 = rv$lower_90,
-                                               # upper_90 = rv$upper_90,
                                                width = forecast$width,
-                                               
                                                horizon = 1:golem::get_golem_options("horizons"),
-                                               
                                                target_end_date = forecast$x,
-                                               # assigned_baseline_model = baseline_model,
-                                               # chosen_baseline_model = input$baseline_model,
-                                               # comments = comments(),
-                                               
                                                submission_date = as.Date(golem::get_golem_options("submission_date")))
                      
                      # add information about selection variables to submission sheet
@@ -291,7 +264,6 @@ mod_adjust_forecast_enter_values_server <- function(id, horizon, forecast){
     
     if (horizon == 1) {
       shinyjs::hideElement(id = "copy", asis = FALSE)
-      # , condition = "horizon != 1"
     }
     
     

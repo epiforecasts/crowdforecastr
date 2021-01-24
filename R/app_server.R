@@ -94,9 +94,6 @@ app_server <- function( input, output, session ) {
     plot_scale = NULL
   )
   
-  baseline <- reactiveVal()
-  
-
   # add various server logic functions
   mod_view_options_server("view_options", view_options = view_options,
                           forecast = forecast,
