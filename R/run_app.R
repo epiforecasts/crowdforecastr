@@ -22,6 +22,7 @@ run_app <- function(
   past_forecasts = NULL,
   app_up_to_date = TRUE,
   default_distribution = "log-normal",
+  default_baseline = "constant baseline",
   force_increasing_uncertainty = TRUE,
   ...
 ) {
@@ -45,6 +46,7 @@ run_app <- function(
                         app_up_to_date = app_up_to_date, 
                         past_forecasts = past_forecasts, 
                         default_distribution = default_distribution, 
+                        default_baseline = default_baseline,
                         force_increasing_uncertainty = force_increasing_uncertainty), 
                    list(...))
   )

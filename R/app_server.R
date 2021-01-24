@@ -63,13 +63,16 @@ app_server <- function( input, output, session ) {
     }
   }
   
+  baseline <- intialise_baseline_forecast(observations = observations, 
+                                          selection_vars = golem::get_golem_options("selection_vars"))
+
   forecast <- reactiveValues(
     # values that can be submitted
-    median = rep(NA, num_horizons),
-    width = rep(NA, num_horizons),
+    median = baseline$median,
+    width = baseline$width,
     # latent values that store changes in numeric input, without direct effect
-    median_latent = rep(NA, num_horizons),
-    width_latent = rep(NA, num_horizons),
+    median_latent = baseline$median,
+    width_latent = baseline$width,
     # chosen forecast distribution
     distribution = NA,
     # dates for which a forecast is made
@@ -99,6 +102,9 @@ app_server <- function( input, output, session ) {
                           forecast = forecast,
                           selection_vars = golem::get_golem_options("selection_vars"), 
                           observations = golem::get_golem_options("data"))
+  
+
+  
   mod_adjust_forecast_server("adjust_forecast", forecast = forecast, 
                              observations = observations, 
                              view_options = view_options, 
@@ -107,6 +113,7 @@ app_server <- function( input, output, session ) {
                              num_horizons = num_horizons, 
                              baseline = baseline, 
                              user_management)
+
   mod_forecast_plot_server(id = "forecast_plot",
                            observations = golem::get_golem_options("data"),
                            forecast = forecast,

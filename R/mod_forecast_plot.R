@@ -41,13 +41,15 @@ mod_forecast_plot_server <- function(id, observations,
     
     
     output$forecast_plot <- plotly::renderPlotly({
-
+      
       # filter data according to selection
       obs_filtered <- observations %>%
         filter_data_util(view_options = view_options, selection_vars = selection_vars)
-
+      
+      selection_id <- forecast$selected_combination
+      
       # create circles for the prediction that can then be dragged around
-      circles_pred <- map2(.x = forecast$x, .y  = forecast$median,
+      circles_pred <- map2(.x = forecast$x, .y  = forecast$median[[selection_id]],
                            ~list(type = "circle",
                                  # anchor circles at (mpg, wt)
                                  xanchor = .x,
@@ -68,12 +70,12 @@ mod_forecast_plot_server <- function(id, observations,
                   name = 'observed data',mode = 'lines+markers', 
                   marker = list(size = 2)) %>%
         add_trace(x = forecast$x,
-                  y = forecast$median, type = "scatter",
+                  y = forecast$median[[selection_id]], type = "scatter",
                   name = 'forecast', mode = 'lines', color = I("dark green")) %>%
         layout(xaxis = list(range = c(min(obs_filtered$target_end_date),
                                       max(forecast$x) + 5), 
                             title = "Date"), 
-               yaxis = list(title = forecast$selected_combination)) %>%
+               yaxis = list(title = selection_id)) %>%
         layout(yaxis = list(hoverformat = '.2f', rangemode = "tozero")) %>%
         layout(shapes = c(circles_pred)) %>%
         layout(title = "Observations and Forecast") %>%
@@ -84,7 +86,6 @@ mod_forecast_plot_server <- function(id, observations,
       # add ribbons around the true data if specified. 
       colnames <- colnames(observations)
       if (any(grepl("upper", colnames)) && any(grepl("lower", colnames))) {
-        print("hello")
         
         for (interval in view_options$desired_intervals) {
           
@@ -95,8 +96,6 @@ mod_forecast_plot_server <- function(id, observations,
           # in its name
           index_lower <- grepl("lower", colnames) & grepl(int, colnames)
           index_upper <- grepl("upper", colnames) & grepl(int, colnames)
-          
-          print(index_lower)
           
           if (any(index_lower) && any(index_upper)) {
             lower_bound <- obs_filtered[[colnames[index_lower]]]
@@ -119,7 +118,6 @@ mod_forecast_plot_server <- function(id, observations,
 
       # add ribbons around predictions for the selected prediction intervals
       for (interval in view_options$desired_intervals) {
-        
         int <- sub(pattern = "%", replacement = "", x = interval) %>%
           as.numeric()
         
@@ -131,8 +129,8 @@ mod_forecast_plot_server <- function(id, observations,
         
         # calculate upper and lower bound for a given prediction interval
         for (horizon in 1:num_horizons) {
-          lower_bound[horizon] <- forecast[[paste0("forecasts_horizon_", horizon)]][round(forecast_quantiles, 3) == lower_quantile]
-          upper_bound[horizon] <- forecast[[paste0("forecasts_horizon_", horizon)]][round(forecast_quantiles, 3) == upper_quantile]
+          lower_bound[horizon] <- forecast[[selection_id]][[paste0("horizon_", horizon)]][round(forecast_quantiles, 3) == lower_quantile]
+          upper_bound[horizon] <- forecast[[selection_id]][[paste0("horizon_", horizon)]][round(forecast_quantiles, 3) == upper_quantile]
         }
         
         color <- "'rgba(255, 127, 14," #orange
@@ -167,7 +165,10 @@ mod_forecast_plot_server <- function(id, observations,
                    if (length(shape_anchors) != 2) return()
                    row_index <- unique(readr::parse_number(names(shape_anchors)) + 1)
                    y_coord <- as.numeric(shape_anchors[2])
-                   forecast$median[row_index] <- round(y_coord, 2)
+                   
+                   selection_id <- forecast$selected_combination
+                   
+                   forecast$median[[selection_id]][row_index] <- round(y_coord, 2)
                  })
     
     

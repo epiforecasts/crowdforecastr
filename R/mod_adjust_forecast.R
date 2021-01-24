@@ -90,7 +90,7 @@ mod_adjust_forecast_server <- function(id, num_horizons, observations, forecast,
                                        view_options, selection_vars, baseline){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
-    
+
     lapply(1:num_horizons,
            FUN = function(i) {
              mod_adjust_forecast_enter_values_server(id = paste0("prediction_", i),
@@ -103,6 +103,7 @@ mod_adjust_forecast_server <- function(id, num_horizons, observations, forecast,
     })
 
     observeEvent(input$apply_baseline, {
+      selection_id <- forecast$selected_combination
       filtered_observations <- filter_data_util(data = observations, 
                                                 view_options, 
                                                 selection_vars)
@@ -110,67 +111,70 @@ mod_adjust_forecast_server <- function(id, num_horizons, observations, forecast,
       baseline <- baseline_forecast(baseline = input$select_baseline, 
                                     filtered_observations = filtered_observations, 
                                     num_horizons = num_horizons)
-      forecast$median_latent <- baseline$median
-      forecast$width_latent <- baseline$width
-      forecast$median <- forecast$median_latent
-      forecast$width <- forecast$width_latent
       
-      # update_values(id_prefix = "prediction_", forecast = forecast,
-      #               num_horizons = num_horizons, session = session)
+      forecast$median_latent[[selection_id]] <- baseline$median
+      forecast$width_latent[[selection_id]] <- baseline$width
+      forecast$median[[selection_id]] <- forecast$median_latent[[selection_id]]
+      forecast$width[[selection_id]] <- forecast$width_latent[[selection_id]]
+      # this works
     }, ignoreNULL = FALSE)
 
 
     observeEvent(input$update, {
-      
+      selection_id <- forecast$selected_combination
       # turn latent values into values that are actually stored
-      # this should also automatically update any numeric inputs
+      # this should also trigger an automatic update of any numeric inputs
       forecast$distribution <- input$distribution
-      forecast$median <- forecast$median_latent
-      forecast$width <- forecast$width_latent
+      forecast$median[[selection_id]] <- forecast$median_latent[[selection_id]]
+      forecast$width[[selection_id]] <- forecast$width_latent[[selection_id]]
+      # this works
     }, ignoreNULL = FALSE)
     
     # whenever either median or width changes (if points are dragged or 
     # something is updated) --> upadte the stored forecasting in accordance
     # to the selected forecast distribution
     # not quite sure whether this logic should happen somewhere else?
-    observeEvent(c(forecast$median, forecast$width, input$distribution), {
-      
-      
+    observeEvent(c(forecast$median, forecast$width, input$distribution, forecast$selected_combination), {
+      selection_id <- forecast$selected_combination
       # THIS IS BUSINESS LOGIC THAT SHOULD HAPPEN SOMEWHERE OUTSIDE
-      
       for (horizon in 1:num_horizons) {
+        
         if (input$distribution == "log-normal") {
-          forecast[[paste0("forecasts_horizon_", horizon)]] <- exp(qnorm(forecast_quantiles,
-                                                                   mean = log(forecast$median[horizon]),
-                                                                   sd = as.numeric(forecast$width[horizon])))
+          forecast[[selection_id]][[paste0("horizon_", horizon)]] <- exp(qnorm(forecast_quantiles,
+                                                                   mean = log(forecast$median[[selection_id]][horizon]),
+                                                                   sd = as.numeric(forecast$width[[selection_id]][horizon])))
         } else if (input$distribution == "normal") {
-          forecast[[paste0("forecasts_horizon_", horizon)]] <- (qnorm(forecast_quantiles,
-                                                                mean = (forecast$median[horizon]),
-                                                                sd = as.numeric(forecast$width[horizon])))
+          forecast[[selection_id]][[paste0("horizon_", horizon)]] <- (qnorm(forecast_quantiles,
+                                                                mean = (forecast$median[[selection_id]][horizon]),
+                                                                sd = as.numeric(forecast$width[[selection_id]][horizon])))
           
         } else if (input$distribution == "cubic-normal") {
-          forecast[[paste0("forecasts_horizon_", horizon)]] <- (qnorm(forecast_quantiles,
-                                                                mean = (forecast$median[horizon]) ^ (1 / 3),
-                                                                sd = as.numeric(forecast$width[horizon]))) ^ 3
+          forecast[[selection_id]][[paste0("horizon_", horizon)]] <- (qnorm(forecast_quantiles,
+                                                                mean = (forecast$median[[selection_id]][horizon]) ^ (1 / 3),
+                                                                sd = as.numeric(forecast$width[[selection_id]][horizon]))) ^ 3
         } else if (input$distribution == "fifth-power-normal") {
-          forecast[[paste0("forecasts_horizon_", horizon)]] <- (qnorm(forecast_quantiles,
-                                                                mean = (forecast$median[horizon]) ^ (1 / 5),
-                                                                sd = as.numeric(forecast$width[horizon]))) ^ 5
+          forecast[[selection_id]][[paste0("horizon_", horizon)]] <- (qnorm(forecast_quantiles,
+                                                                mean = (forecast$median[[selection_id]][horizon]) ^ (1 / 5),
+                                                                sd = as.numeric(forecast$width[[selection_id]][horizon]))) ^ 5
         } else if (input$distribution == "seventh-power-normal") {
-          forecast[[paste0("forecasts_horizon_", horizon)]] <- (qnorm(forecast_quantiles,
-                                                                mean = (forecast$median[horizon]) ^ (1 / 7),
-                                                                sd = as.numeric(forecast$width[horizon]))) ^ 7
+          forecast[[selection_id]][[paste0("horizon_", horizon)]] <- (qnorm(forecast_quantiles,
+                                                                mean = (forecast$median[[selection_id]][horizon]) ^ (1 / 7),
+                                                                sd = as.numeric(forecast$width[[selection_id]][horizon]))) ^ 7
         }
+        # this works
       }
     })
     
     
     observeEvent(c(input$submit),
                  {
+                   selection_id <- forecast$selected_combination
                    print("submission pressed")
                    # error handling
                    # expand this at some point to handle both conditions
-                   if (!is.na(forecast$median) && all(forecast$median == forecast$median_latent) && all(forecast$width == forecast$width_latent)) {
+                   if (!is.na(forecast$median[[selection_id]]) && 
+                       all(forecast$median[[selection_id]] == forecast$median_latent[[selection_id]]) && 
+                       all(forecast$width[[selection_id]] == forecast$width_latent[[selection_id]])) {
                      mismatch <- FALSE
                    } else {
                      mismatch <- TRUE
@@ -178,7 +182,7 @@ mod_adjust_forecast_server <- function(id, num_horizons, observations, forecast,
                    
                    if (mismatch) {
                      showNotification("Your forecasts don't match your inputs yet. Please press 'update' for all changes to take effect and submit again.", type = "error")
-                   } else if (golem::get_golem_options("force_increasing_uncertainty") && any(diff(forecast$width) <= 0)) {
+                   } else if (golem::get_golem_options("force_increasing_uncertainty") && any(diff(forecast$width[[selection_id]]) <= 0)) {
                      showNotification("Your uncertainty should be increasing over time. Please increase the width parameter for later forecast dates.", type = "error")
                      }
                    else {
@@ -191,8 +195,8 @@ mod_adjust_forecast_server <- function(id, num_horizons, observations, forecast,
                                                leader_board = current_user_data$appearboard,
                                                name_board = current_user_data$board_name,
                                                distribution = forecast$distribution,
-                                               median = forecast$median,
-                                               width = forecast$width,
+                                               median = forecast$median[[selection_id]],
+                                               width = forecast$width[[selection_id]],
                                                horizon = 1:golem::get_golem_options("horizons"),
                                                target_end_date = forecast$x,
                                                submission_date = as.Date(golem::get_golem_options("submission_date")))
@@ -270,30 +274,35 @@ mod_adjust_forecast_enter_values_server <- function(id, horizon, forecast){
     # observe any changes in the median 
     # (if baseline changes or if a point is dragged) and 
     # update the numeric inputs accordingly
-    observeEvent(forecast$median, {
+    observeEvent(c(forecast$median, forecast$selected_combination), {
+      selection_id <- forecast$selected_combination
       updateNumericInput(session = session, inputId = "median",
-                         value = forecast$median[horizon])
+                         value = forecast$median[[selection_id]][horizon])
     })
     # observe any changes in the median (if baseline is changed on startup) and
     # update the numeric inputs accordingly
-    observeEvent(forecast$width, {
+    observeEvent(c(forecast$width, forecast$selected_combination), {
+      selection_id <- forecast$selected_combination
       updateNumericInput(session = session, inputId = "width",
-                         value = round(forecast$width[horizon], 2))
+                         value = round(forecast$width[[selection_id]][horizon], 2))
     })
     
     observeEvent(input$copy, {
+      selection_id <- forecast$selected_combination
       updateNumericInput(session = session, inputId = "median",
-                         value = forecast$median_latent[horizon - 1])
+                         value = forecast$median_latent[[selection_id]][horizon - 1])
       updateNumericInput(session = session, inputId = "width",
-                         value = forecast$width_latent[horizon - 1])
+                         value = forecast$width_latent[[selection_id]][horizon - 1])
     })
 
     observeEvent(input$median, {
-      forecast$median_latent[horizon] <- input$median
+      selection_id <- forecast$selected_combination
+      forecast$median_latent[[selection_id]][horizon] <- input$median
     })
 
     observeEvent(input$width, {
-      forecast$width_latent[horizon] <- input$width
+      selection_id <- forecast$selected_combination
+      forecast$width_latent[[selection_id]][horizon] <- input$width
     })
   })
 }

@@ -20,6 +20,7 @@ run_app(
   past_forecasts = NULL,
   app_up_to_date = TRUE,
   default_distribution = "log-normal",
+  default_baseline = "constant baseline",
   force_increasing_uncertainty = TRUE,
   ...
 )

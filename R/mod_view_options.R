@@ -31,10 +31,7 @@ mod_view_options_ui <- function(id, selection_vars, observations){
                     numericInput(inputId = ns("weeks_to_show"), 
                                  label = "No. of weeks to show",
                                  min = 1,
-                                 value = 12), 
-                    br(),
-                    "To adapt forecast as well, Press 'apply baseline' below")
-             
+                                 value = 12))
              ),
     
     shinyWidgets::prettyRadioButtons(inputId = ns("plot_scale"),
@@ -149,6 +146,7 @@ mod_view_options_selection_field_server <- function(id,
     # update view options and also duplicate the data into forecast
     observeEvent(input$selection, {
       view_options[[selection_var]] <- input$selection
+      
       forecast[[selection_var]] <- input$selection
       # also update the selected combination string that is a unique identifier
       # of the currently displayed selection by collecting all selections in a 
@@ -157,14 +155,13 @@ mod_view_options_selection_field_server <- function(id,
       forecast$selection_list[[selection_var]] <- input$selection
       forecast$selected_combination <- paste(forecast$selection_list, 
                                              collapse = " - ")
-      
     })
     
-    # also update the numeric whenever the view_options change. This change can 
+    # also update the selection whenever the view_options change. This change can 
     # be externally introduced when something is submitted and the next 
     # forecast is selected
     observeEvent(forecast[[selection_var]], {
-      updateSelectInput(session = session, inputId = "selection", 
+      updateSelectInput(session = session, inputId = "selection",
                         selected = forecast[[selection_var]])
     })
   })
