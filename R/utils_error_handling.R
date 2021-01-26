@@ -10,7 +10,10 @@ try_and_wait <- function(expr,
   while (attempt::is_try_error(out)){
     shinyalert::shinyalert(type = type, 
                            text = message, 
-                           closeOnClickOutside = TRUE)
+                           closeOnEsc = FALSE,
+                           showConfirmButton = FALSE,
+                           closeOnClickOutside = FALSE, 
+                           timer = time_to_wait * 1000)
     Sys.sleep(time_to_wait)
     out <- attempt::attempt(expr)
     shinyalert::closeAlert()

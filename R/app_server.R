@@ -85,6 +85,7 @@ app_server <- function( input, output, session ) {
   
   # set the forecast dates depending on the first forecast date
   if (first_forecast_date == "auto") {
+    # go one time step beyond the last observed date for the first forecast date
     forecast$x <- max(as.Date(data$target_end_date)) + (1:num_horizons) * horizon_interval
   } else {
     forecast$x <- as.Date(first_forecast_date) + (0:(num_horizons - 1)) * horizon_interval
