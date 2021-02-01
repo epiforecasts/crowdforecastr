@@ -284,7 +284,7 @@ mod_adjust_forecast_enter_values_server <- function(id, horizon, forecast){
     observeEvent(c(forecast$width, forecast$selected_combination), {
       selection_id <- forecast$selected_combination
       updateNumericInput(session = session, inputId = "width",
-                         value = round(forecast$width[[selection_id]][horizon], 2))
+                         value = round(forecast$width[[selection_id]][horizon], 3))
     })
     
     observeEvent(input$copy, {
