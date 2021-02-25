@@ -20,7 +20,8 @@ mod_user_management_ui <- function(id){
 mod_user_management_server <- function(id, 
                                        user_management, 
                                        user_data, 
-                                       user_data_sheet_id){
+                                       user_data_sheet_id, 
+                                       parent){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
     

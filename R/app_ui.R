@@ -22,7 +22,9 @@ app_ui <- function(request) {
       #         shinyauthr::logoutUI("logout")),
       dashboardSidebar(
         sidebarMenu(
+          id = "tabs",
           menuItem("Make Forecast", tabName = "makeforecast", icon = icon("chart-line")),
+          menuItem("Instructions", tabName = "instructions", icon = icon("question-circle")),
           menuItem("View Performance", tabName = "performance", icon = icon("chart-bar")),
           menuItem("Account Details", tabName = "account", icon = icon("user"))
         )
@@ -74,6 +76,12 @@ app_ui <- function(request) {
                                         width = 12)
                     
                   )
+          ),
+          
+          tabItem(tabName = "instructions",
+                  h2("Forecast Demo Video"), 
+                  br(),
+                  HTML('<iframe height = 600, width = "100%" allowfullscreen="allowfullscreen" mozallowfullscreen="mozallowfullscreen" msallowfullscreen="msallowfullscreen" oallowfullscreen="oallowfullscreen" webkitallowfullscreen="webkitallowfullscreen" src="https://www.youtube.com/embed/NzZkNxXFgm8" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen fullscreen></iframe>')
           ),
           
           tabItem(tabName = "performance",

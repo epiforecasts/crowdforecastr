@@ -28,10 +28,16 @@ app_server <- function( input, output, session ) {
   # if user management is used, define all necessary elements and server functions
   if (use_user_management) {
     # manage google authentification
-    options(gargle_oauth_cache = ".secrets")
-    googledrive::drive_auth(cache = ".secrets", email = golem::get_golem_options("google_account_mail"))
-    googlesheets4::gs4_auth(token = googledrive::drive_token())
-    
+    # if possible, use google service account token for authorisation
+    if (!is.null(golem::get_golem_options("path_service_account_json"))) {
+      path_json <- golem::get_golem_options("path_service_account_json")
+      gs4_auth(path = path_json)
+    } else {
+      options(gargle_oauth_cache = ".secrets")
+      googledrive::drive_auth(cache = ".secrets", email = golem::get_golem_options("google_account_mail"))
+      googlesheets4::gs4_auth(token = googledrive::drive_token())
+    }
+
     # load user data
     user_data_sheet_id <- golem::get_golem_options("user_data_sheet_id")
     user_data <- try_and_wait(
@@ -56,6 +62,17 @@ app_server <- function( input, output, session ) {
                                user_management, 
                                user_data, 
                                user_data_sheet_id)
+    
+    # change the tab to the instructions tab if a new user is created
+    observeEvent(user_management$open_create_user_form, 
+                 {
+                   if (user_management$open_create_user_form) {
+                     updateTabItems(session, 
+                                    inputId = "tabs", 
+                                    selected = "instructions")
+                   }
+                 })
+    
     
     past_forecasts <- golem::get_golem_options("past_forecasts")
     if (!is.null(past_forecasts)) {

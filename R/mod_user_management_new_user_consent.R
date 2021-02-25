@@ -25,7 +25,7 @@ mod_user_management_new_user_consent_ui <- function(id){
                         <br>
                         <h4> Making Forecasts </h4>
                         
-                        You will be randomly assigned to one of two forecast conditions. In one condition, you are asked to provide a predictive distirbution for every week. You can choose a distribution and adjust the median and width of the forecast. In the other condition you are asked to provide the median as well as the lower and upper bound of a 90% prediction interval. 
+                        You are asked to provide a predictive distirbution for every week. You can choose a distribution and adjust the median and width of the forecast. 
                         <br>
                         Tooltips will guide you through the interface, but you can also turn them off. If you cannot see the entire user interface you may want to zoom out in your browser.
                         <br>
