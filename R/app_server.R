@@ -21,6 +21,13 @@ app_server <- function( input, output, session ) {
   observations <- golem::get_golem_options("data")
   horizon_interval <- golem::get_golem_options("horizon_interval")
   first_forecast_date <- golem::get_golem_options("first_forecast_date")
+  selection_vars <- golem::get_golem_options("selection_vars")
+  
+  possible_selections <- list()
+  for (selection_var in selection_vars) {
+    possible_selections[[selection_var]] <- unique(observations[[selection_var]])
+  }
+  print(possible_selections)
   
   # assign user_management so it can be passed around even if not used
   user_management <- NULL
@@ -81,7 +88,7 @@ app_server <- function( input, output, session ) {
   }
   
   baseline <- intialise_baseline_forecast(observations = observations, 
-                                          selection_vars = golem::get_golem_options("selection_vars"))
+                                          possible_selections = possible_selections)
 
   forecast <- reactiveValues(
     # values that can be submitted
@@ -118,7 +125,7 @@ app_server <- function( input, output, session ) {
   # add various server logic functions
   mod_view_options_server("view_options", view_options = view_options,
                           forecast = forecast,
-                          selection_vars = golem::get_golem_options("selection_vars"), 
+                          selection_vars = selection_vars, 
                           observations = golem::get_golem_options("data"))
   
 
@@ -127,7 +134,7 @@ app_server <- function( input, output, session ) {
                              observations = observations, 
                              view_options = view_options, 
                              forecast_quantiles = forecast_quantiles,
-                             selection_vars = golem::get_golem_options("selection_vars"),
+                             selection_vars = selection_vars,
                              num_horizons = num_horizons, 
                              baseline = baseline, 
                              user_management)
@@ -136,7 +143,7 @@ app_server <- function( input, output, session ) {
                            observations = golem::get_golem_options("data"),
                            forecast = forecast,
                            num_horizons = num_horizons,
-                           selection_vars = golem::get_golem_options("selection_vars"),
+                           selection_vars = selection_vars,
                            view_options = view_options, 
                            forecast_quantiles = forecast_quantiles)
   mod_account_details_server("account_details", user_management)
