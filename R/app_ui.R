@@ -91,9 +91,7 @@ app_ui <- function(request) {
           
           tabItem(tabName = "account",
                   h2("Account information"), 
-                  mod_account_details_ui("account_details", 
-                                         selection_vars = golem::get_golem_options("selection_vars"), 
-                                         observations = golem::get_golem_options("data"))
+                  mod_account_details_ui("account_details")
                   
           )
         )

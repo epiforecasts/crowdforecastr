@@ -7,15 +7,16 @@
 #' @noRd 
 #'
 #' @importFrom shiny NS tagList 
-mod_account_details_ui <- function(id, selection_vars, observations){
+mod_account_details_ui <- function(id){
   ns <- NS(id)
   
+  selection_vars <- golem::get_golem_options("selection_vars")
   tagList(
     uiOutput(ns("account_details")), 
     h3("Select which targets to forecast"),
     lapply(selection_vars, 
            FUN = function(var) {
-             possible_selections <- list_selections(selection_vars, observations)
+             possible_selections <- list_selections()
              selection_options <- possible_selections[[var]]
              mod_account_details_selection_ui(id = ns(paste0("selection_", var)),
                                               selection_options = selection_options, 

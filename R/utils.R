@@ -13,7 +13,10 @@ filter_data_util <- function(data, view_options, selection_vars) {
 
 
 # function to return a list of possible selections
-list_selections <- function(selection_vars, observations) {
+list_selections <- function() {
+  selection_vars <- golem::get_golem_options("selection_vars")
+  observations <- golem::get_golem_options("data")
+  
   possible_selections <- list()
   for (selection_var in selection_vars) {
     possible_selections[[selection_var]] <- unique(observations[[selection_var]])

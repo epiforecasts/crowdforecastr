@@ -23,7 +23,7 @@ app_server <- function( input, output, session ) {
   first_forecast_date <- golem::get_golem_options("first_forecast_date")
   selection_vars <- golem::get_golem_options("selection_vars")
   
-  possible_selections <- list_selections(selection_vars, observations)
+  possible_selections <- list_selections()
   
   # assign user_management so it can be passed around even if not used
   user_management <- NULL
