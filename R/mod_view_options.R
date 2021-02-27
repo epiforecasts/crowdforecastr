@@ -168,6 +168,9 @@ mod_view_options_selection_field_server <- function(id,
                         selected = forecast[[selection_var]])
     })
     
+    # update the available choices according to what the user has selected. 
+    # This happens after login when user data is fetched from the server or 
+    # when the user changes their choices in the user account tab
     observeEvent(user_management$selection_choice, {
       updateSelectInput(session = session, inputId = "selection",
                         selected = forecast[[selection_var]],
