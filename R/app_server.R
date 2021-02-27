@@ -123,7 +123,8 @@ app_server <- function( input, output, session ) {
   mod_view_options_server("view_options", view_options = view_options,
                           forecast = forecast,
                           selection_vars = selection_vars, 
-                          observations = golem::get_golem_options("data"))
+                          observations = golem::get_golem_options("data"), 
+                          user_management = user_management)
   
 
   
