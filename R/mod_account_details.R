@@ -100,7 +100,8 @@ mod_account_details_selection_server <- function(id, selection_var,
     ns <- session$ns
     
     observeEvent(input$make_selection, {
-      print(input$make_selection)
+      # think about what happens when you deeselect an item that you're just making a forecast for
+      user_management$selection_choice[[selection_var]] <- input$make_selection
     })
     
     # update the selected choices according to what the user has selected. 
