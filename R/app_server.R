@@ -51,6 +51,7 @@ app_server <- function( input, output, session ) {
     # store everything needed for user management in a list
     user_management <- reactiveValues(
       user_data_sheet_id = user_data_sheet_id,
+      selection_choice = NULL,
       current_user_data = NULL,
       open_login = TRUE,
       app_unlocked = FALSE, 

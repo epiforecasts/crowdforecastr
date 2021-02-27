@@ -39,7 +39,7 @@ mod_user_management_login_server <- function(id,
     credentials <- callModule(shinyauthr::login, "login", 
                               data = user_data,
                               user_col = username,
-                              pwd_col = Password,
+                              pwd_col = password,
                               sodium_hashed = TRUE,
                               log_out = reactive(TRUE))
     
@@ -50,6 +50,12 @@ mod_user_management_login_server <- function(id,
         user_management$open_login <- FALSE
         
         user_management$current_user_data <- credentials()$info
+        
+        user_management$selection_choice <- get_selections(
+          user_management$current_user_data
+        )
+        
+        print(user_management$selection_choice)
         
         removeModal()
         

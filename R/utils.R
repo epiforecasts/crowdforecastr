@@ -21,3 +21,21 @@ list_selections <- function(selection_vars, observations) {
   return(possible_selections)
 }
 
+
+# function to extract the selections from the user data
+get_selections <- function(current_user_data) {
+  selection_vars <- golem::get_golem_options("selection_vars")
+  observations <- golem::get_golem_options("data")
+  
+  selections <- list()
+  for (var in selection_vars) {
+    user_selection <- current_user_data[[paste0("selection_", var)]]
+    
+    # if nothing is selected, select everything
+    if (is.na(user_selection)) {
+      user_selection <- unique(observations[[var]])
+    }
+    selections[[var]] <- user_selection
+  }
+  return(selections)
+}
