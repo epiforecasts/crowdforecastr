@@ -54,9 +54,6 @@ mod_user_management_login_server <- function(id,
         user_management$selection_choice <- get_selections(
           user_management$current_user_data
         )
-        
-        print(user_management$selection_choice)
-        
         removeModal()
         
       }

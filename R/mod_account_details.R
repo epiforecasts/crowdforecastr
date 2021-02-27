@@ -15,12 +15,13 @@ mod_account_details_ui <- function(id){
     uiOutput(ns("account_details")), 
     h3("Select which targets to forecast"),
     lapply(selection_vars, 
-           FUN = function(var) {
+           FUN = function(selection_var) {
              possible_selections <- list_selections()
-             selection_options <- possible_selections[[var]]
-             mod_account_details_selection_ui(id = ns(paste0("selection_", var)),
-                                              selection_options = selection_options, 
-                                              label = paste("Options for", var))
+             selection_options <- possible_selections[[selection_var]]
+             mod_account_details_selection_ui(
+               id = ns(paste0("selection_", selection_var)),
+               selection_var = selection_var
+             )
            })
   )
 }
@@ -29,7 +30,7 @@ mod_account_details_ui <- function(id){
 #' account_details Server Functions
 #'
 #' @noRd 
-mod_account_details_server <- function(id, user_management, possible_selections){
+mod_account_details_server <- function(id, user_management){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
     
@@ -50,15 +51,16 @@ mod_account_details_server <- function(id, user_management, possible_selections)
         })
       }
     })
+    
+    selection_vars <- golem::get_golem_options("selection_vars")
+    
+    lapply(selection_vars, 
+           FUN = function(var) {
+             mod_account_details_selection_server(id = paste0("selection_", var),
+                                                  selection_var = var,
+                                                  user_management = user_management)
+           })
   })
-  
-  lapply(names(possible_selections), 
-         FUN = function(var) {
-           mod_account_details_selection_server(id = paste0("selection_", var), 
-                                                possible_selections)
-         })
-  
-  
 }
     
 
@@ -72,13 +74,17 @@ mod_account_details_server <- function(id, user_management, possible_selections)
 #' @noRd 
 #'
 #' @importFrom shiny NS tagList 
-mod_account_details_selection_ui <- function(id, selection_options, label){
+mod_account_details_selection_ui <- function(id, selection_var){
   ns <- NS(id)
+  
+  possible_selections <- list_selections()
+  selection_options <- possible_selections[[selection_var]]
+  
   tagList(
     checkboxGroupInput(inputId = ns("make_selection"), 
-                       label = label,
+                       label = paste("Options for", selection_var),
                        choices = selection_options, 
-                       selected = selection_options, 
+                       # selected = selection_options, 
                        inline = TRUE)
   )
   
@@ -88,17 +94,23 @@ mod_account_details_selection_ui <- function(id, selection_options, label){
 #' account_details Server Functions
 #'
 #' @noRd 
-mod_account_details_selection_server <- function(id, possible_selections){
+mod_account_details_selection_server <- function(id, selection_var, 
+                                                 user_management){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
     
-    selection_vars <- names(possible_selections)
+    observeEvent(input$make_selection, {
+      print(input$make_selection)
+    })
     
-    # # first do it hard-coded for location names
-    # if ("location" %in% selection_vars) {
-    #   
-    # }
-    
-  
+    # update the selected choices according to what the user has selected. 
+    # This happens after login when user data is fetched from the server
+    observeEvent(user_management$selection_choice, {
+      user_selection <- user_management$selection_choice[[selection_var]]
+      print(user_selection)
+      updateCheckboxGroupInput(
+        inputId = "make_selection",
+        selected = user_selection)
+    })
   })
 }

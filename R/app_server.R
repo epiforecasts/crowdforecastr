@@ -144,7 +144,7 @@ app_server <- function( input, output, session ) {
                            selection_vars = selection_vars,
                            view_options = view_options, 
                            forecast_quantiles = forecast_quantiles)
-  mod_account_details_server("account_details", user_management, possible_selections)
+  mod_account_details_server("account_details", user_management)
   mod_past_performance_server("past_performance", user_management)
   
   # add server logic for additional information. Maybe that could be packed into one
