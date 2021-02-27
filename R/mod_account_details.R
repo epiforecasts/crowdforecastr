@@ -7,17 +7,28 @@
 #' @noRd 
 #'
 #' @importFrom shiny NS tagList 
-mod_account_details_ui <- function(id){
+mod_account_details_ui <- function(id, selection_vars, observations){
   ns <- NS(id)
+  
   tagList(
-    uiOutput(ns("account_details"))
+    uiOutput(ns("account_details")), 
+    h3("Select which targets to forecast"),
+    lapply(selection_vars, 
+           FUN = function(var) {
+             possible_selections <- list_selections(selection_vars, observations)
+             selection_options <- possible_selections[[var]]
+             mod_account_details_selection_ui(id = ns(paste0("selection_", var)),
+                                              selection_options = selection_options, 
+                                              label = paste("Options for", var))
+           })
   )
 }
     
+
 #' account_details Server Functions
 #'
 #' @noRd 
-mod_account_details_server <- function(id, user_management){
+mod_account_details_server <- function(id, user_management, possible_selections){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
     
@@ -39,10 +50,54 @@ mod_account_details_server <- function(id, user_management){
       }
     })
   })
+  
+  lapply(names(possible_selections), 
+         FUN = function(var) {
+           mod_account_details_selection_server(id = paste0("selection_", var), 
+                                                possible_selections)
+         })
+  
+  
 }
     
-## To be copied in the UI
-# mod_account_details_ui("account_details_ui_1")
+
+
+#' UI for selection of targets
+#'
+#' @description A shiny Module.
+#'
+#' @param id,input,output,session Internal parameters for {shiny}.
+#'
+#' @noRd 
+#'
+#' @importFrom shiny NS tagList 
+mod_account_details_selection_ui <- function(id, selection_options, label){
+  ns <- NS(id)
+  tagList(
+    checkboxGroupInput(inputId = ns("make_selection"), 
+                       label = label,
+                       choices = selection_options, 
+                       selected = selection_options, 
+                       inline = TRUE)
+  )
+  
+}
+
+
+#' account_details Server Functions
+#'
+#' @noRd 
+mod_account_details_selection_server <- function(id, possible_selections){
+  moduleServer( id, function(input, output, session){
+    ns <- session$ns
     
-## To be copied in the server
-# mod_account_details_server("account_details_ui_1")
+    selection_vars <- names(possible_selections)
+    
+    # # first do it hard-coded for location names
+    # if ("location" %in% selection_vars) {
+    #   
+    # }
+    
+  
+  })
+}

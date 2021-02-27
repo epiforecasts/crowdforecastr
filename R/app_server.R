@@ -23,11 +23,7 @@ app_server <- function( input, output, session ) {
   first_forecast_date <- golem::get_golem_options("first_forecast_date")
   selection_vars <- golem::get_golem_options("selection_vars")
   
-  possible_selections <- list()
-  for (selection_var in selection_vars) {
-    possible_selections[[selection_var]] <- unique(observations[[selection_var]])
-  }
-  print(possible_selections)
+  possible_selections <- list_selections(selection_vars, observations)
   
   # assign user_management so it can be passed around even if not used
   user_management <- NULL
@@ -146,7 +142,7 @@ app_server <- function( input, output, session ) {
                            selection_vars = selection_vars,
                            view_options = view_options, 
                            forecast_quantiles = forecast_quantiles)
-  mod_account_details_server("account_details", user_management)
+  mod_account_details_server("account_details", user_management, possible_selections)
   mod_past_performance_server("past_performance", user_management)
   
   # add server logic for additional information. Maybe that could be packed into one

@@ -11,3 +11,13 @@ filter_data_util <- function(data, view_options, selection_vars) {
   return(data)
 }
 
+
+# function to return a list of possible selections
+list_selections <- function(selection_vars, observations) {
+  possible_selections <- list()
+  for (selection_var in selection_vars) {
+    possible_selections[[selection_var]] <- unique(observations[[selection_var]])
+  }
+  return(possible_selections)
+}
+
