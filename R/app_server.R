@@ -53,6 +53,7 @@ app_server <- function( input, output, session ) {
       user_data_sheet_id = user_data_sheet_id,
       selection_choice = NULL,
       current_user_data = NULL,
+      user_data = user_data,
       open_login = TRUE,
       app_unlocked = FALSE, 
       open_new_user_consent = FALSE, 

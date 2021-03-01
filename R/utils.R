@@ -13,6 +13,9 @@ filter_data_util <- function(data, view_options, selection_vars) {
 
 
 # function to return a list of possible selections
+# this returns a list with one element for every element in selection_vars. 
+# every element then contains a vector of all available possibilities based
+# on the observations
 list_selections <- function() {
   selection_vars <- golem::get_golem_options("selection_vars")
   observations <- golem::get_golem_options("data")
@@ -26,6 +29,9 @@ list_selections <- function() {
 
 
 # function to extract the selections from the user data
+# this gets the selection of forecast targets from the current_user_data. 
+# if the user hasn't selected anything, every possibility is returned 
+# based on the observations
 get_selections <- function(current_user_data) {
   selection_vars <- golem::get_golem_options("selection_vars")
   observations <- golem::get_golem_options("data")

@@ -39,7 +39,7 @@ mod_user_management_login_server <- function(id,
     credentials <- callModule(shinyauthr::login, "login", 
                               data = user_data,
                               user_col = username,
-                              pwd_col = password,
+                              pwd_col = Password,
                               sodium_hashed = TRUE,
                               log_out = reactive(TRUE))
     
