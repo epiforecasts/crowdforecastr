@@ -109,8 +109,15 @@ mod_account_details_server <- function(id, user_management){
       # construct range to write to by getting the line and 
       # add + 1 as the header is the first line in the sheet
       forecaster_id <- user_management$current_user_data$forecaster_id
-      line_number <- which(user_management$user_data$forecaster_id == forecaster_id) + 1
-
+      # read user data from sheet - this is necessary because a new user 
+      # might want to change their data again and in the meantime the 
+      # user data could have grown if other users had registered
+      user_data <- try_and_wait(
+        read_sheet(ss = golem::get_golem_options("user_data_sheet_id"), 
+                   sheet = "ids")
+      )
+      line_number <- which(user_data$forecaster_id == forecaster_id) + 1
+      
       # write to sheet
       try_and_wait(
         range_write(ss = golem::get_golem_options("user_data_sheet_id"), 
@@ -166,19 +173,21 @@ mod_account_details_selection_server <- function(id, selection_var,
                                                  user_management){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
-    
+
+    # whenever a selection is changed, store it such that it can be accessed
+    # from within the mod_account_details_server() function and the 
+    # actionButton there. 
     observeEvent(input$make_selection, {
-      # think about what happens when you deeselect an item that you're just making a forecast for
       user_management$selection_choice[[selection_var]] <- input$make_selection
     })
     
     # update the selected choices according to what the user has selected. 
     # This happens after login when user data is fetched from the server
-    observeEvent(user_management$selection_choice, {
-      user_selection <- user_management$selection_choice[[selection_var]]
+    observeEvent(user_management$current_user_data, {
+      user_selection <- get_selections(user_management$current_user_data)
       updateCheckboxGroupInput(
         inputId = "make_selection",
-        selected = user_selection)
+        selected = user_selection[[selection_var]])
     })
   })
 }

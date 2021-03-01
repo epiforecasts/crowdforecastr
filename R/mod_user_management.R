@@ -68,7 +68,7 @@ mod_user_management_server <- function(id,
                    }
                  })
     mod_user_management_create_user_server("create_user_form", 
-                                           user_management, user_data, 
+                                           user_management, 
                                            user_data_sheet_id)
   })
 }
