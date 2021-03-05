@@ -15,7 +15,7 @@ baseline_forecast <- function(baseline,
     
     # get width
     sigma <-  filtered_observations %>%
-      dplyr::mutate(difference = c(NA, diff(log(min(value, 1))))) %>%
+      dplyr::mutate(difference = c(NA, diff(log(pmax(value, 1))))) %>%
       dplyr::mutate(target_end_date = as.Date(target_end_date)) %>%
       dplyr::filter(target_end_date > max(target_end_date) - 4 * horizon_interval) %>%
       dplyr::pull(difference) %>%
