@@ -87,7 +87,8 @@ mod_adjust_forecast_enter_values_ui <- function(id, horizon){
 #' @noRd 
 mod_adjust_forecast_server <- function(id, num_horizons, observations, forecast, 
                                        forecast_quantiles, user_management,
-                                       view_options, selection_vars, baseline){
+                                       view_options, selection_vars, baseline, 
+                                       submitted){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
 
@@ -169,7 +170,6 @@ mod_adjust_forecast_server <- function(id, num_horizons, observations, forecast,
     observeEvent(c(input$submit),
                  {
                    selection_id <- forecast$selected_combination
-                   print("submission pressed")
                    # error handling
                    # expand this at some point to handle both conditions
                    if (!is.na(forecast$median[[selection_id]]) && 
@@ -205,17 +205,17 @@ mod_adjust_forecast_server <- function(id, num_horizons, observations, forecast,
                      for (selection_var in selection_vars) {
                        submissions[[selection_var]] <- forecast[[selection_var]]
                      }
-                     
-                     print(submissions)
 
-                     
-                     print("submitting")
                      # append data to google sheet
                      try_and_wait(
                        googlesheets4::sheet_append(data = submissions,
                                                    ss = golem::get_golem_options("forecast_sheet_id")), 
                        message = "We are trying to connect to the submission data base."
                      )
+                     
+                     # store submission in submitted list
+                     submitted$submitted_combinations <- 
+                       c(submitted$submitted_combinations, forecast$selected_combination)
                   
                      # move to the next forecast
                      # go through the selection variables in a backwards order

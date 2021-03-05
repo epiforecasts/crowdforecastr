@@ -113,6 +113,13 @@ app_server <- function( input, output, session ) {
     forecast$x <- as.Date(first_forecast_date) + (0:(num_horizons - 1)) * horizon_interval
   }
   
+  # create a list where all the submitted combinations are stored
+  # this gets then filled with what is stored in forecast$selected_combination
+  # whenever something gets submitted
+  submitted <- reactiveValues(
+    submitted_combinations = c()
+  )
+  
   # store the currently selected view options. 
   view_options <- reactiveValues(
     desired_intervals = NULL, 
@@ -136,7 +143,8 @@ app_server <- function( input, output, session ) {
                              selection_vars = selection_vars,
                              num_horizons = num_horizons, 
                              baseline = baseline, 
-                             user_management)
+                             user_management = user_management, 
+                             submitted = submitted)
 
   mod_forecast_plot_server(id = "forecast_plot",
                            observations = golem::get_golem_options("data"),
@@ -147,6 +155,9 @@ app_server <- function( input, output, session ) {
                            forecast_quantiles = forecast_quantiles)
   mod_account_details_server("account_details", user_management)
   mod_past_performance_server("past_performance", user_management)
+  
+  mod_submissions_overview_server("submissions-overview", submitted, 
+                                  view_options)
   
   # add server logic for additional information. Maybe that could be packed into one
   # user would then be able to decide how many of these to include, instead of them being hard coded here
