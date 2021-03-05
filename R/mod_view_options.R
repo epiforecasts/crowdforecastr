@@ -178,6 +178,13 @@ mod_view_options_selection_field_server <- function(id,
         user_management$current_user_data
       )
       
+      # if target for currently selected for forecasting is not in the 
+      # targets that the user chose to forecast, select the first target 
+      # the user chose to forecast instead
+      if (!(forecast[[selection_var]] %in% user_selection[[selection_var]])) {
+        forecast[[selection_var]] <- user_selection[[selection_var]][1]
+      }
+      
       updateSelectInput(session = session, inputId = "selection",
                         selected = forecast[[selection_var]],
                         choices = user_selection[[selection_var]])
