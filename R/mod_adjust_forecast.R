@@ -221,9 +221,13 @@ mod_adjust_forecast_server <- function(id, num_horizons, observations, forecast,
                      # go through the selection variables in a backwards order
                      n <- length(selection_vars)
                      reverse_selection <- selection_vars[n:1]
+                     
+                     # get the list of items the user has selected to forecast
+                     user_selections <- get_selections(current_user_data)
+                     
                      for (selection_var in reverse_selection) {
 
-                       available_choices <- unique(observations[[selection_var]])
+                       available_choices <- unique(user_selections[[selection_var]])
                        num_choices <- length(available_choices)
                        index_current_selection <- which(forecast[[selection_var]] == available_choices)
                        
