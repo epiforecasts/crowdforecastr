@@ -17,12 +17,13 @@ observations <- dplyr::bind_rows(deaths_inc,
                 target_end_date = date) %>%
   dplyr::arrange(location, target_type, target_end_date)
 
-obs_filt <- observations
+  obs_filt <- observations
 
 
 
 run_app(data = obs_filt, 
         google_account_mail = "epiforecasts@gmail.com", 
+        selection_vars = c("location_name", "target_type"),
         path_service_account_json = "../covid-german-forecasts/crowd-forecast/.secrets/crowd-forecast-app-c98ca2164f6c-service-account-token.json",
         forecast_sheet_id = "1nOy3BfHoIKCHD4dfOtJaz4QMxbuhmEvsWzsrSMx_grI",#"1xdJDgZdlN7mYHJ0D0QbTcpiV9h1Dmga4jVoAg5DhaKI",
         user_data_sheet_id = "1GJ5BNcN1UfAlZSkYwgr1-AxgsVA2wtwQ9bRwZ64ZXRQ", 

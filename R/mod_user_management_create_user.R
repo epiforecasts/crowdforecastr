@@ -9,6 +9,7 @@
 #' @importFrom shiny NS tagList 
 mod_user_management_create_user_ui <- function(id){
   ns <- NS(id)
+  selection_vars <- golem::get_golem_options("selection_vars")
   tagList(
     fluidRow(column(12, h3("Your Name"))),
     fluidRow(column(12, textInput(ns("name"), label = NULL))),
@@ -24,9 +25,23 @@ mod_user_management_create_user_ui <- function(id){
     fluidRow(column(6, passwordInput(ns("password"), "Choose a password")), 
              column(6, passwordInput(ns("password2"), "Repeat password"))),
     # br(),
+    fluidRow(column(12, h3("Select forecast targets"))),
+    lapply(selection_vars, 
+           FUN = function(var) {
+             fluidRow(column(12,
+                             checkboxGroupInput(inputId = ns(paste0("make_selection_", var)), 
+                                                label = paste("Options for", var),
+                                                choices = list_selections()[[var]], 
+                                                selected = list_selections()[[var]],
+                                                inline = TRUE)
+                             ))
+           }),
+    
     fluidRow(column(12, h3("Email"))),
     fluidRow(column(12, "Please submit your email, if you like. If you provide your email, we will send you weekly reminders to conduct the survey and may contact you in case of questions.")), 
-    fluidRow(column(12, textInput(ns("email"), label = "Email"))),
+    fluidRow(column(12, textInput(ns("email"), label = "Email"))),   
+    
+    
     fluidRow(column(12, h3("Domain Expertise"))),
     fluidRow(column(4, 
                     checkboxInput(inputId = ns("expert"), 
@@ -46,14 +61,15 @@ mod_user_management_create_user_ui <- function(id){
 #' user_management_create_user Server Functions
 #'
 #' @noRd 
-mod_user_management_create_user_server <- function(id, user_management, 
-                                                   user_data, 
+mod_user_management_create_user_server <- function(id, user_management,
                                                    user_data_sheet_id){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
- 
+
     observeEvent(input$createnew,
                  {
+                   user_data <- user_management$user_data
+
                    if ((input$username != "") && (input$password != "")) {
                      existing_users <- unique(user_data$username)
                      
@@ -66,7 +82,7 @@ mod_user_management_create_user_server <- function(id, user_management,
                        removeModal()
                        
                        generate_random_id <- function() {
-                         existing_ids <- unique(user_data$forecast_id)
+                         existing_ids <- unique(user_data$forecaster_id)
                          id <- round(runif(1) * 1000000)
                          while (id %in% existing_ids) {
                            id <- round(runif(1) * 1000000)
@@ -99,7 +115,7 @@ mod_user_management_create_user_server <- function(id, user_management,
                          return(board_name) 
                        }
                        
-                       current_user_data <- data.frame(forecaster = input$name, 
+                       current_user_data <- data.frame(name = input$name, 
                                                        username = input$username,
                                                        password = sodium::password_store(input$password),
                                                        email = input$email,
@@ -110,6 +126,18 @@ mod_user_management_create_user_server <- function(id, user_management,
                                                        forecaster_id = generate_random_id(), 
                                                        board_name = create_leaderboard_name())
                        
+                       # add selection preferences to user data
+                       selection_vars <- golem:::get_golem_options("selection_vars")
+                       
+                       for (var in selection_vars) {
+                         user_selection <- input[[paste0("make_selection_", var)]] %>%
+                           paste(collapse = ", ")
+                         print(user_selection)
+                         current_user_data[[paste0("selection_", var)]] <- user_selection
+                       }
+
+                       print(current_user_data)
+                       
                        try_and_wait(
                          googlesheets4::sheet_append(data = current_user_data, 
                                                      ss = user_data_sheet_id), 
@@ -117,7 +145,7 @@ mod_user_management_create_user_server <- function(id, user_management,
                        )
                        
                        user_management$current_user_data <- current_user_data
-                       
+                       print("this worked")
                      }
                    } else {
                      showNotification("Username or password missing", type = "error")

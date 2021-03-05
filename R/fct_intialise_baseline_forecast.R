@@ -1,11 +1,8 @@
-intialise_baseline_forecast <- function(observations, selection_vars) {
+intialise_baseline_forecast <- function(observations, possible_selections) {
   # get all possible combinations for the selection_vars and turn them into
   # unique identifiers
-  possible_selections <- list()
-  for (selection_var in selection_vars) {
-    possible_selections[[selection_var]] <- unique(observations[[selection_var]])
-  }
   combinations <- expand.grid(possible_selections)
+  selection_vars <- names(possible_selections)
   selection_names <- apply(combinations, MARGIN = 1, 
                            FUN = function(x) {
                              paste(x, collapse = " - ")
