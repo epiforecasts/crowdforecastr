@@ -34,6 +34,15 @@ mod_view_options_ui <- function(id, selection_vars, observations){
                                  value = 12))
              ),
     
+    fluidRow(column(12, 
+                    p("To choose the targets you want to forecast, go to the 'Account Details' tab on the left"))
+             ),
+    
+    # fluidRow(
+    #   actionButton(inputId = "select_forecast_targets",
+    #                label = "Choose forecast targets")),
+    # br(),
+    
     shinyWidgets::prettyRadioButtons(inputId = ns("plot_scale"),
                                      inline = TRUE,
                                      label = "Plot scale",
@@ -45,7 +54,6 @@ mod_view_options_ui <- function(id, selection_vars, observations){
                                       inline = TRUE,
                                       fill = TRUE,
                                       selected = c("50%", "90%"))
- 
   )
 }
 
@@ -68,7 +76,8 @@ mod_view_options_ui <- function(id, selection_vars, observations){
 #' @noRd 
 mod_view_options_server <- function(id, view_options, forecast,
                                     selection_vars, observations, 
-                                    user_management){
+                                    user_management, 
+                                    parent_session){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
     
@@ -87,6 +96,12 @@ mod_view_options_server <- function(id, view_options, forecast,
     # update the list of reactive values when selections are changed
     observeEvent(input$weeks_to_show, {
       view_options[["weeks_to_show"]] <- input$weeks_to_show
+    })
+    
+    observeEvent(input$select_forecast_targets, {
+      updateTabItems(session = parent_session, 
+                     inputId = "tabs", 
+                     selected = "account")
     })
     
     observeEvent(input$plot_scale, {
@@ -176,7 +191,7 @@ mod_view_options_selection_field_server <- function(id,
       
       user_selection <- get_selections(
         user_management$current_user_data
-      )
+    )
       
       # if target for currently selected for forecasting is not in the 
       # targets that the user chose to forecast, select the first target 

@@ -132,7 +132,8 @@ app_server <- function( input, output, session ) {
                           forecast = forecast,
                           selection_vars = selection_vars, 
                           observations = golem::get_golem_options("data"), 
-                          user_management = user_management)
+                          user_management = user_management, 
+                          parent_session = session)
   
 
   
