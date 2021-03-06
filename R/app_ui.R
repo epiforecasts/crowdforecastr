@@ -80,6 +80,10 @@ app_ui <- function(request) {
           ),
           
           tabItem(tabName = "instructions",
+                  h2("General instructions"), 
+                  br(), 
+                  p("To select the targets that you want to forecast or change your account details, click 'Account Details' on the left menu"),
+                  p("For more information on how to make a foreast, have a look at the demo video"),
                   h2("Forecast Demo Video"), 
                   br(),
                   HTML('<iframe height = 600, width = "100%" allowfullscreen="allowfullscreen" mozallowfullscreen="mozallowfullscreen" msallowfullscreen="msallowfullscreen" oallowfullscreen="oallowfullscreen" webkitallowfullscreen="webkitallowfullscreen" src="https://www.youtube.com/embed/NzZkNxXFgm8" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen fullscreen></iframe>')

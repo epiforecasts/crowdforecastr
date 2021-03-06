@@ -11,6 +11,7 @@ mod_past_performance_ui <- function(id){
   ns <- NS(id)
   tagList(
     h4("Past Performance will be coming shortly!"),
+    p("For now, have a look at the performance board, epiforecasts.io/covid.german.forecasts"),
     plotOutput(ns("past_forecasts_plot"))
   )
 }
