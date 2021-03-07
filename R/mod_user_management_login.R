@@ -15,9 +15,14 @@ mod_user_management_login_ui <- function(id){
     br(), 
     fluidRow(column(12, 
                     style = 'padding-left: 15px; padding-right: 15px',
-                    HTML("See the performance board <a href = 'https://epiforecasts.io/covid.german.forecasts'>here</a>"),
-                    h4("Note: If the app doesn't fit on your screen we highly recommend you zoom out a bit"), 
-                    h5("If you just want to take a look, log in with username and password 'test'"))),
+                    HTML("<h4><b>Data update</b>: Every Sunday at 8.30am CET</h4>"),
+                    HTML("<h4><b>Submission deadline</b>: Every Monday at 11pm CET (10pm UK time</h4>"),
+                    br(),
+                    HTML("<h4><b>Performance board</b>: <a href = 'https://epiforecasts.io/covid.german.forecasts'>here</a></h4>"),
+                    HTML("<h4><b>Zoom note</b>: If the app doesn't fit on your screen we highly recommend you zoom out a bit</h4>"),
+                    HTML("<h4><b>Test account</b>: If you just want to take a look, log in with username and password 'test'</h4>")
+                    )
+             ),
     br(),
     actionButton(inputId = ns("new_user"),
                  label = "Create New User")
