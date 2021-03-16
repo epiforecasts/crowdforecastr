@@ -41,7 +41,7 @@ get_selections <- function(current_user_data) {
     user_selection <- current_user_data[[paste0("selection_", var)]]
     
     # if nothing is selected, select everything
-    if (is.na(user_selection)) {
+    if (is.null(user_selection) || is.na(user_selection)) {
       user_selection <- unique(observations[[var]])
     } else {
       user_selection <- strsplit(user_selection, split = ", ")[[1]]
