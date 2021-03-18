@@ -1,5 +1,5 @@
 Package: crowdforecastr
-Title: Crowdforecastr
+Title: Eliciting crowd forecasts in R shiny
 Version: 0.1.0.0
 Authors@R: 
 person(given = "Nikos",
