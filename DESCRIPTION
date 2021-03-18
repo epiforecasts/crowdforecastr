@@ -1,12 +1,21 @@
 Package: crowdforecastr
-Title: An Amazing Shiny App
-Version: 0.0.0.9000
+Title: Crowdforecastr
+Version: 0.1.0.0
 Authors@R: 
-    person(given = "firstname",
-           family = "lastname",
+person(given = "Nikos",
+           family = "Bosse",
            role = c("aut", "cre"),
-           email = "your@email.com")
-Description: What the package does (one paragraph).
+           email = "nikosbosse@gmail.com",
+           comment = c(ORCID = "https://orcid.org/0000-0002-7750-5280")),
+    person(given = "Sam Abbott",
+           role = c("aut"),
+           email = "contact@samabbott.co.uk",
+           comment = c(ORCID = "0000-0001-8057-8037")), 
+    person("Sebastian", "Funk", 
+            email = "sebastian.funk@lshtm.ac.uk", 
+            role = c("aut")))
+Description: Crowdforecastr is a shiny app that allows to collect quantitative 
+predictions from a large number of people. 
 License: MIT + file LICENSE
 Imports: 
     config,
