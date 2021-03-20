@@ -162,10 +162,13 @@ app_server <- function( input, output, session ) {
   
   # add server logic for additional information. Maybe that could be packed into one
   # user would then be able to decide how many of these to include, instead of them being hard coded here
-  mod_display_external_info_server("our_world_in_data_dashboard", "https://ourworldindata.org/coronavirus-data-explorer?country=DEU~POL&region=World&casesMetric=true&interval=smoothed&smoothing=7&pickerMetric=location&pickerSort=asc")
-  mod_display_external_info_server("cfr", "https://ourworldindata.org/coronavirus-data-explorer?zoomToSelection=true&time=2020-03-14..latest&country=POL~DEU&region=World&cfrMetric=true&interval=total&aligned=true&hideControls=true&smoothing=0&pickerMetric=location&pickerSort=asc")
-  mod_display_external_info_server("positivity_rate", "https://ourworldindata.org/coronavirus-data-explorer?yScale=log&zoomToSelection=true&minPopulationFilter=1000000&time=earliest..latest&country=POL~DEU&region=World&casesMetric=true&interval=smoothed&aligned=true&hideControls=true&smoothing=7&pickerMetric=location&pickerSort=asc")
-  mod_display_external_info_server("daily_testing", "https://ourworldindata.org/grapher/daily-tests-per-thousand-people-smoothed-7-day?tab=chart&stackMode=absolute&time=earliest..latest&country=DEU~POL&region=World")
-  mod_display_external_info_server("gov_stringency", "https://ourworldindata.org/grapher/covid-stringency-index?tab=chart&stackMode=absolute&time=2020-01-22..latest&country=DEU~POL&region=Europe") 
+  
+  # covid.e
+  
+  mod_display_external_info_server("our_world_in_data_dashboard", "https://ourworldindata.org/coronavirus-data-explorer?country=DEU~POL~BEL~BGR~CZE~DNK~EST~IRL~GRC~ESP~FRA~HRV~ITA~CYP~LVA~LTU~LUX~HUN~MLT~NLD~AUT~PRT~ROU~SVN~SVK~FIN~SWE~GBR~ISL~LIE~NOR~CHE&region=World&casesMetric=true&interval=smoothed&smoothing=7&pickerMetric=location&pickerSort=asc")
+  mod_display_external_info_server("cfr", "https://ourworldindata.org/coronavirus-data-explorer?zoomToSelection=true&time=2020-03-14..latest&country=DEU~POL~BEL~BGR~CZE~DNK~EST~IRL~GRC~ESP~FRA~HRV~ITA~CYP~LVA~LTU~LUX~HUN~MLT~NLD~AUT~PRT~ROU~SVN~SVK~FIN~SWE~GBR~ISL~LIE~NOR~CHE&region=World&cfrMetric=true&interval=total&aligned=true&hideControls=true&smoothing=0&pickerMetric=location&pickerSort=asc")
+  mod_display_external_info_server("positivity_rate", "https://ourworldindata.org/coronavirus-data-explorer?yScale=log&zoomToSelection=true&minPopulationFilter=1000000&time=earliest..latest&country=DEU~POL~BEL~BGR~CZE~DNK~EST~IRL~GRC~ESP~FRA~HRV~ITA~CYP~LVA~LTU~LUX~HUN~MLT~NLD~AUT~PRT~ROU~SVN~SVK~FIN~SWE~GBR~ISL~LIE~NOR~CHE&region=World&casesMetric=true&interval=smoothed&aligned=true&hideControls=true&smoothing=7&pickerMetric=location&pickerSort=asc")
+  mod_display_external_info_server("daily_testing", "https://ourworldindata.org/grapher/daily-tests-per-thousand-people-smoothed-7-day?tab=chart&stackMode=absolute&time=earliest..latest&country=DEU~POL~BEL~BGR~CZE~DNK~EST~IRL~GRC~ESP~FRA~HRV~ITA~CYP~LVA~LTU~LUX~HUN~MLT~NLD~AUT~PRT~ROU~SVN~SVK~FIN~SWE~GBR~ISL~LIE~NOR~CHE&region=World")
+  mod_display_external_info_server("gov_stringency", "https://ourworldindata.org/grapher/covid-stringency-index?tab=chart&stackMode=absolute&time=2020-01-22..latest&country=DEU~POL~BEL~BGR~CZE~DNK~EST~IRL~GRC~ESP~FRA~HRV~ITA~CYP~LVA~LTU~LUX~HUN~MLT~NLD~AUT~PRT~ROU~SVN~SVK~FIN~SWE~GBR~ISL~LIE~NOR~CHE&region=Europe") 
   
 }
