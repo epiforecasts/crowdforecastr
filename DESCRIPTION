@@ -1,21 +1,21 @@
 Package: crowdforecastr
 Title: Eliciting crowd forecasts in R shiny
 Version: 0.1.0.0
-Authors@R: 
-person(given = "Nikos",
-           family = "Bosse",
-           role = c("aut", "cre"),
-           email = "nikosbosse@gmail.com",
-           comment = c(ORCID = "https://orcid.org/0000-0002-7750-5280")),
-    person(given = "Sam Abbott",
-           role = c("aut"),
-           email = "contact@samabbott.co.uk",
-           comment = c(ORCID = "0000-0001-8057-8037")), 
-    person("Sebastian", "Funk", 
-            email = "sebastian.funk@lshtm.ac.uk", 
-            role = c("aut")))
-Description: Crowdforecastr is a shiny app that allows to collect quantitative 
-predictions from a large number of people. 
+Authors@R: c(
+  person("Nikos", "Bosse", 
+         role = c("aut", "cre"),
+         email = "nikosbosse@gmail.com",
+         comment = c(ORCID = "0000-0002-7750-5280")),
+  person(given = "Sam Abbott",
+         role = c("aut"),
+         email = "sam.abbott@lshtm.ac.uk",
+         comment = c(ORCID = "0000-0001-8057-8037")),
+  person(given = "EpiForecasts",
+             role = c("aut")),
+  person("Sebastian", "Funk", 
+         email = "sebastian.funk@lshtm.ac.uk", 
+         role = c("aut")))
+Description: Crowdforecastr is a shiny app that allows to collect quantitative predictions from a large number of people. 
 License: MIT + file LICENSE
 Imports: 
     config,
