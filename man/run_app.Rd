@@ -5,6 +5,7 @@
 \title{Run the Shiny Application}
 \usage{
 run_app(
+  app_mode = c("regular", "rt"),
   app_title = "Crowd Forecast",
   data,
   first_forecast_date = "auto",

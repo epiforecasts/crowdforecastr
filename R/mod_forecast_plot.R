@@ -13,8 +13,13 @@
 
 mod_forecast_plot_ui <- function(id){
   ns <- NS(id)
+  
+  plot_height <- ifelse(golem::get_golem_options("app_mode") == "regular", 
+                   "850px", 
+                   "450px")
+  
   tagList(
-    plotlyOutput(ns("forecast_plot"), height = "850px"), 
+    plotlyOutput(ns("forecast_plot"), height = plot_height), 
     h4("Drag points around to change the forecast!")
   )
 }

@@ -12,15 +12,19 @@ baseline_forecast <- function(baseline,
 
     last_value <- filtered_observations$value[nrow(filtered_observations)]
     median <- rep(last_value, num_horizons)
-    
-    # get width
-    sigma <-  filtered_observations %>%
-      dplyr::mutate(difference = c(NA, diff(log(pmax(value, 1))))) %>%
-      dplyr::mutate(target_end_date = as.Date(target_end_date)) %>%
-      dplyr::filter(target_end_date > max(target_end_date) - 4 * horizon_interval) %>%
-      dplyr::pull(difference) %>%
-      sd(na.rm = TRUE)
-    width <- rep(sigma, num_horizons)
+
+    # for rt forecast specify width manually
+    if (golem::get_golem_options("app_mode") == "rt") {
+      width <- 0.01 * 1:num_horizons
+    } else {
+      sigma <-  filtered_observations %>%
+        dplyr::mutate(difference = c(NA, diff(log(pmax(value, 1))))) %>%
+        dplyr::mutate(target_end_date = as.Date(target_end_date)) %>%
+        dplyr::filter(target_end_date > max(target_end_date) - 4 * horizon_interval) %>%
+        dplyr::pull(difference) %>%
+        sd(na.rm = TRUE)
+      width <- rep(sigma, num_horizons)
+    }
   }
   
   return(list(median = median, 

@@ -7,6 +7,7 @@
 #' @importFrom shiny shinyApp
 #' @importFrom golem with_golem_options
 run_app <- function(
+  app_mode = c("regular", "rt"),
   app_title = "Crowd Forecast",
   data,
   first_forecast_date = "auto",
@@ -33,6 +34,7 @@ run_app <- function(
       server = app_server
     ), 
     golem_opts = c(list(app_title = app_title, 
+                        app_mode = app_mode,
                         data = data, 
                         first_forecast_date = first_forecast_date,
                         horizons = horizons,

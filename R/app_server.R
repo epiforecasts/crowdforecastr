@@ -8,6 +8,7 @@
 #' @import shinyauthr
 #' @importFrom shinyalert useShinyalert closeAlert
 #' @importFrom attempt attempt is_try_error
+#' @import data.table
 #' @noRd
 app_server <- function( input, output, session ) {
   
@@ -159,6 +160,12 @@ app_server <- function( input, output, session ) {
   
   mod_submissions_overview_server("submissions-overview", submitted, 
                                   view_options)
+  
+  
+  if (golem::get_golem_options("app_mode") == "rt") {
+    mod_Rt_sim_plot_server("rt-visualisation", forecast, 
+                           observations = golem::get_golem_options("data"))
+  }
   
   # add server logic for additional information. Maybe that could be packed into one
   # user would then be able to decide how many of these to include, instead of them being hard coded here
