@@ -51,3 +51,14 @@ get_selections <- function(current_user_data) {
   }
   return(selections)
 }
+
+# helper function to add a vertical line to a plotly plot
+add_vline = function(p, x, ...) {
+  l_shape = list(
+    type = "line", 
+    y0 = 0, y1 = 1, yref = "paper", # i.e. y as a proportion of visible region
+    x0 = x, x1 = x, 
+    line = list(...)
+  )
+  p %>% layout(shapes=list(l_shape))
+}

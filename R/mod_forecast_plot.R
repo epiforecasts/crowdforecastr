@@ -69,7 +69,15 @@ mod_forecast_plot_server <- function(id, observations,
                                  line = list(color = "transparent")))
 
       # make basic plot
-      plot <- plot_ly() %>%
+      plot <- plot_ly() 
+      
+      if (golem::get_golem_options("app_mode") == "rt") {
+        plot <- add_vline(plot, x = golem::get_golem_options("submission_date"), 
+                          color = "rgb(169,169,169)", 
+                          dash = "dash")
+      }
+      
+      plot <- plot %>%
         add_trace(x = obs_filtered$target_end_date,
                   y = obs_filtered$value, type = "scatter",
                   name = 'observed data',mode = 'lines+markers', 

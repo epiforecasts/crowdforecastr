@@ -73,7 +73,10 @@ mod_Rt_sim_plot_server <- function(id,
                                         max(sim$forecast$target_end_date) + 5),
                               title = "Date")) %>%
           layout(yaxis = list(hoverformat = '.2f', rangemode = "tozero")) %>%
-          layout(legend = list(orientation = 'h'))
+          layout(legend = list(orientation = 'h')) %>%
+          add_vline(x = golem::get_golem_options("submission_date"), 
+                    color = "rgb(169,169,169)", 
+                    dash = "dash")
         
         # add ribbons
         plot <- plot %>%
