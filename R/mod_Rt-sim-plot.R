@@ -36,9 +36,9 @@ mod_Rt_sim_plot_server <- function(id,
     output$rt_forecast_plot <- plotly::renderPlotly({
       
       observeEvent(input$simulate, {
-        print("calculating")
         sim_data <- simulate_cases_from_rt(forecast)
         
+        print("success")
         sim$forecast <- forecasthubutils::make_weekly(
           sim_data$forecast,
           value_cols = c("lower_90", "lower_50", "median", "upper_50", "upper_90"),
@@ -49,6 +49,8 @@ mod_Rt_sim_plot_server <- function(id,
                                                         value_cols = "confirm",
                                                         group_by = NULL)
       }, ignoreInit = TRUE)
+      
+      print(sim$forecast)
       
       if (is.null(sim$forecast)) {
         plot <- plot_ly(type = "scatter")

@@ -48,7 +48,7 @@ simulate_cases_from_rt <- function(forecast) {
                   value = round(value, 3), 
                   date = as.Date(target_end_date), 
                   target = "cases", 
-                  location = forecast$selection_list$region) %>%
+                  location = forecast$selected_combination) %>%
     dplyr::ungroup() %>%
     dplyr::select(date, value, target, location) %>%
     dplyr::arrange(date) %>%
@@ -57,8 +57,11 @@ simulate_cases_from_rt <- function(forecast) {
     dplyr::ungroup()
   
   root_dir <- "../covid-german-forecasts/rt-crowd-forecast/data/rt-epinow-data"
+  root_dir <- golem::get_golem_options("path_epinow2_samples")
   
   submission_date <- golem::get_golem_options("submission_date")
+  
+  print(crowd_rt)
   
   simulations <-simulate_crowd_cases(
     crowd_rt,
@@ -69,8 +72,8 @@ simulate_cases_from_rt <- function(forecast) {
   # get summary of simulations for current region
   sim_data <- list()
 
-  sim_data$observations <- simulations[[forecast$selection_list$region]]$cases$observations
-  sim_data$forecast <- simulations[[forecast$selection_list$region]]$cases$summarised %>%
+  sim_data$observations <- simulations[[forecast$selected_combination]]$cases$observations
+  sim_data$forecast <- simulations[[forecast$selected_combination]]$cases$summarised %>%
     dplyr::filter(variable == "reported_cases", 
                   date >= as.Date(submission_date) - 4)
   
