@@ -15,7 +15,7 @@ baseline_forecast <- function(baseline,
         nrow(filtered_observations), 
         by = 7
       )
-      median <- filtered_observations$value[indices]
+      median <- round(filtered_observations$value[indices], 3)
       width <- 0.01 * 1:num_horizons
     } else {
       # get last observed value for median 
