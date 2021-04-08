@@ -40,7 +40,7 @@ mod_Rt_sim_plot_server <- function(id,
         dir = file.path(golem::get_golem_options("path_epinow2_samples"), "cases"),
         date = golem::get_golem_options("submission_date")
       )
-    }, ignoreInit = TRUE)
+    }, ignoreInit = FALSE)
     
     # trigger whenever either the simulation button is pressed or the location
     # changes --> which leads to a change in the fit object as above
@@ -50,7 +50,7 @@ mod_Rt_sim_plot_server <- function(id,
       sim$forecast <- sim_data$forecast
       sim$truth_data <- sim_data$truth_data
       print("simulation finished")
-    }, ignoreInit = TRUE)
+    }, ignoreInit = FALSE)
     
     output$rt_forecast_plot <- plotly::renderPlotly({
       
