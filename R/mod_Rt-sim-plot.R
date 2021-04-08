@@ -45,6 +45,7 @@ mod_Rt_sim_plot_server <- function(id,
     # trigger whenever either the simulation button is pressed or the location
     # changes --> which leads to a change in the fit object as above
     observeEvent(c(input$simulate, sim$epinow2_fit$summarised), {
+      req(sim$epinow2_fit)
       print("simulation started")
       sim_data <- simulate_cases_from_rt(forecast, sim$epinow2_fit)
       sim$forecast <- sim_data$forecast

@@ -179,6 +179,7 @@ mod_view_options_selection_field_server <- function(id,
     # be externally introduced when something is submitted and the next 
     # forecast is selected
     observeEvent(forecast[[selection_var]], {
+      print("updating input selection as forecast[[selection_var]] changed")
       updateSelectInput(session = session, inputId = "selection",
                         selected = forecast[[selection_var]])
     })
@@ -197,6 +198,7 @@ mod_view_options_selection_field_server <- function(id,
       # targets that the user chose to forecast, select the first target 
       # the user chose to forecast instead
       if (!(forecast[[selection_var]] %in% user_selection[[selection_var]])) {
+        print("update input after change in user selection")
         forecast[[selection_var]] <- user_selection[[selection_var]][1]
       }
       
