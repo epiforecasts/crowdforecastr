@@ -30,27 +30,36 @@ mod_Rt_sim_plot_server <- function(id,
     
     sim <- reactiveValues(
       forecast = NULL, 
-      truth_data = NULL
+      truth_data = NULL,
+      epinow2_fit = NULL
     )
     
+    observeEvent(forecast$selected_combination, {
+      sim$epinow2_fit <- load_epinow(
+        target_region = forecast$selected_combination,
+        dir = file.path(golem::get_golem_options("path_epinow2_samples"), "cases"),
+        date = golem::get_golem_options("submission_date")
+      )
+    }, ignoreInit = TRUE)
+    
+    # trigger whenever either the simulation button is pressed or the location
+    # changes --> which leads to a change in the fit object as above
+    observeEvent(c(input$simulate, sim$epinow2_fit$summarised), {
+      print("simulation started")
+      sim_data <- simulate_cases_from_rt(forecast, sim$epinow2_fit)
+      print("simulation finished")
+      sim$forecast <- forecasthubutils::make_weekly(
+        sim_data$forecast,
+        value_cols = c("lower_90", "lower_50", "median", "upper_50", "upper_90"),
+        group_by = NULL
+      )
+      
+      sim$truth_data <- forecasthubutils::make_weekly(sim_data$observations,
+                                                      value_cols = "confirm",
+                                                      group_by = NULL)
+    }, ignoreInit = TRUE)
+    
     output$rt_forecast_plot <- plotly::renderPlotly({
-      
-      observeEvent(input$simulate, {
-        sim_data <- simulate_cases_from_rt(forecast)
-        
-        print("success")
-        sim$forecast <- forecasthubutils::make_weekly(
-          sim_data$forecast,
-          value_cols = c("lower_90", "lower_50", "median", "upper_50", "upper_90"),
-          group_by = NULL
-        )
-        
-        sim$truth_data <- forecasthubutils::make_weekly(sim_data$observations,
-                                                        value_cols = "confirm",
-                                                        group_by = NULL)
-      }, ignoreInit = TRUE)
-      
-      print(sim$forecast)
       
       if (is.null(sim$forecast)) {
         plot <- plot_ly(type = "scatter")

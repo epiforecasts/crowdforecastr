@@ -7,7 +7,7 @@
 #' @importFrom data.table data.table
 
 
-simulate_cases_from_rt <- function(forecast) {
+simulate_cases_from_rt <- function(forecast, epinow2_fit) {
   selection_id <- forecast$selected_combination
   raw_forecast <- data.table::data.table(
     target_end_date = forecast$x, 
@@ -31,7 +31,6 @@ simulate_cases_from_rt <- function(forecast) {
   date_range <- seq(min(as.Date(min(dates))),
                     max(as.Date(max(dates))), by = "days")
   # n_samples <- max(forecast_samples$sample)
-  
   n_samples <- 50
   helper_data <- expand.grid(target_end_date = date_range,
                              sample = 1:n_samples)
@@ -56,17 +55,15 @@ simulate_cases_from_rt <- function(forecast) {
     dplyr::mutate(sample = seq_along(value)) %>%
     dplyr::ungroup()
   
-  root_dir <- "../covid-german-forecasts/rt-crowd-forecast/data/rt-epinow-data"
   root_dir <- golem::get_golem_options("path_epinow2_samples")
   
   submission_date <- golem::get_golem_options("submission_date")
   
-  print(crowd_rt)
-  
   simulations <-simulate_crowd_cases(
     crowd_rt,
     model_dir = root_dir,
-    target_date = submission_date
+    target_date = submission_date, 
+    epinow2_fit = epinow2_fit
   )
   
   # get summary of simulations for current region
@@ -114,6 +111,7 @@ draw_samples <- function(distribution, median, width, num_samples = 50) {
 
 
 load_epinow <- function(target_region, dir, date) {
+  print("start loading")
   out <- list()
   path <- file.path(dir, target_region, date)
   out$summarised <- readRDS(file.path(path, "summarised_estimates.rds"))
@@ -121,11 +119,12 @@ load_epinow <- function(target_region, dir, date) {
   out$fit <- readRDS(file.path(path, "model_fit.rds"))
   out$args <- readRDS(file.path(path, "model_args.rds"))
   out$observations <- readRDS(file.path(path, "reported_cases.rds"))
+  print("loading finished")
   return(out)
 }
 
-
-simulate_crowd_cases <- function(crowd_rt, model_dir, target_date) {
+# epinoe2_fit is an object as returned by load_epinow
+simulate_crowd_cases <- function(crowd_rt, model_dir, target_date, epinow2_fit) {
   locs <- unique(crowd_rt$location)
   sims <- map(locs, function(loc) {
     dt <- data.table::as.data.table(crowd_rt)
@@ -137,15 +136,8 @@ simulate_crowd_cases <- function(crowd_rt, model_dir, target_date) {
       setDT(dt_tar)
       dt_tar <- dt_tar[, .(date, sample, value)]
       
-      # load fit EpiNow2 model object
-      model <- load_epinow(
-        target_region = loc,
-        dir = file.path(model_dir, tar),
-        date = target_date
-      )
-      
       # extracted estimated Rt and cut to length of forecast
-      est_R <- model$samples[variable == "R"]
+      est_R <- epinow2_fit$samples[variable == "R"]
       est_R <- est_R[, .(date = as.Date(date), sample, value)]
       est_R <- est_R[sample <= max(dt_tar$sample)]
       est_R <- est_R[date < min(dt_tar$date)]
@@ -154,8 +146,8 @@ simulate_crowd_cases <- function(crowd_rt, model_dir, target_date) {
       forecast_rt <- rbindlist(list(est_R, dt_tar))
       setorder(forecast_rt, sample, date)
       
-      sims <- simulate_infections(model, forecast_rt)
-      sims$plot <- plot(sims)
+      sims <- simulate_infections(estimates = epinow2_fit, forecast_rt, samples = max(forecast_rt$sample), 
+                                  batch_size = 10)
       return(sims)
     })
     names(sims) <- tars
