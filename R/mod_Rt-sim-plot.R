@@ -47,16 +47,9 @@ mod_Rt_sim_plot_server <- function(id,
     observeEvent(c(input$simulate, sim$epinow2_fit$summarised), {
       print("simulation started")
       sim_data <- simulate_cases_from_rt(forecast, sim$epinow2_fit)
+      sim$forecast <- sim_data$forecast
+      sim$truth_data <- sim_data$truth_data
       print("simulation finished")
-      sim$forecast <- forecasthubutils::make_weekly(
-        sim_data$forecast,
-        value_cols = c("lower_90", "lower_50", "median", "upper_50", "upper_90"),
-        group_by = NULL
-      )
-      
-      sim$truth_data <- forecasthubutils::make_weekly(sim_data$observations,
-                                                      value_cols = "confirm",
-                                                      group_by = NULL)
     }, ignoreInit = TRUE)
     
     output$rt_forecast_plot <- plotly::renderPlotly({

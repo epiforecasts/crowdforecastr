@@ -7,7 +7,7 @@
 #' @importFrom data.table data.table
 
 
-simulate_cases_from_rt <- function(forecast, epinow2_fit) {
+simulate_cases_from_rt <- function(forecast, epinow2_fit, num_samples = 100) {
   selection_id <- forecast$selected_combination
   raw_forecast <- data.table::data.table(
     target_end_date = forecast$x, 
@@ -21,7 +21,7 @@ simulate_cases_from_rt <- function(forecast, epinow2_fit) {
     dplyr::mutate(
       value = draw_samples(median = median, width = width,
                            distribution = distribution,
-                           num_samples = 50),
+                           num_samples = num_samples),
       sample = list(seq_len(length(value)))
     ) %>%
     tidyr::unnest(cols = c(sample, value)) %>%
@@ -31,9 +31,8 @@ simulate_cases_from_rt <- function(forecast, epinow2_fit) {
   date_range <- seq(min(as.Date(min(dates))),
                     max(as.Date(max(dates))), by = "days")
   # n_samples <- max(forecast_samples$sample)
-  n_samples <- 50
   helper_data <- expand.grid(target_end_date = date_range,
-                             sample = 1:n_samples)
+                             sample = 1:max(forecast_samples$sample))
   
   crowd_rt <- forecast_samples %>%
     dplyr::mutate(target_end_date = as.Date(target_end_date)) %>%
@@ -69,10 +68,30 @@ simulate_cases_from_rt <- function(forecast, epinow2_fit) {
   # get summary of simulations for current region
   sim_data <- list()
 
-  sim_data$observations <- simulations[[forecast$selected_combination]]$cases$observations
-  sim_data$forecast <- simulations[[forecast$selected_combination]]$cases$summarised %>%
+  sim_data$truth_data <- forecasthubutils::make_weekly(
+    simulations[[forecast$selected_combination]]$cases$observations,
+    value_cols = "confirm",
+    group_by = NULL)  
+  
+  samples <- simulations[[forecast$selected_combination]]$cases$samples %>%
     dplyr::filter(variable == "reported_cases", 
                   date >= as.Date(submission_date) - 4)
+  
+  weekly_samples <- make_weekly(samples, value_cols = "value", 
+                                group_by = "sample")
+  
+  sim_data$forecast <- weekly_samples[, .(median = median(value), 
+                                       lower_98 = quantile(value, 0.01),
+                                       lower_95 = quantile(value, 0.025),
+                                       lower_90 = quantile(value, 0.05), 
+                                       lower_50 = quantile(value, 0.25),
+                                       lower_20 = quantile(value, 0.4),
+                                       upper_20 = quantile(value, 0.6), 
+                                       upper_50 = quantile(value, 0.75), 
+                                       upper_90 = quantile(value, 0.95), 
+                                       upper_95 = quantile(value, 0.975), 
+                                       upper_98 = quantile(value, 0.99)), 
+                                   by = "target_end_date"]
   
   return(sim_data)
 }
@@ -83,7 +102,7 @@ simulate_cases_from_rt <- function(forecast, epinow2_fit) {
 
 
 
-draw_samples <- function(distribution, median, width, num_samples = 50) {
+draw_samples <- function(distribution, median, width, num_samples = 100) {
   if (distribution == "log-normal") {
     values <- exp(rnorm(
       num_samples, mean = log(as.numeric(median)), sd = as.numeric(width))
