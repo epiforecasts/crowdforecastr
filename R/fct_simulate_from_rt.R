@@ -156,15 +156,13 @@ simulate_crowd_cases <- function(crowd_rt, model_dir, target_date, epinow2_fit) 
       dt_tar <- dt_tar[, .(date, sample, value)]
       
       # extracted estimated Rt and cut to length of forecast
-      est_R <- epinow2_fit$samples[variable == "R"]
-      est_R <- est_R[, .(date = as.Date(date), sample, value)]
+      est_R <- epinow2_fit$samples
       est_R <- est_R[sample <= max(dt_tar$sample)]
       est_R <- est_R[date < min(dt_tar$date)]
       
       # join estimates and forecast
       forecast_rt <- rbindlist(list(est_R, dt_tar))
       setorder(forecast_rt, sample, date)
-      
       sims <- simulate_infections(estimates = epinow2_fit, forecast_rt, samples = max(forecast_rt$sample), 
                                   batch_size = 10)
       return(sims)
@@ -175,9 +173,3 @@ simulate_crowd_cases <- function(crowd_rt, model_dir, target_date, epinow2_fit) 
   names(sims) <- locs
   return(sims)
 }
-
-
-
-
-
-
