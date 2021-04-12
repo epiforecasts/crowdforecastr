@@ -9,7 +9,7 @@ baseline_forecast <- function(baseline,
   }
   if (baseline[1] %in% c("constant baseline", "constant-baseline")) {
     # for rt forecast specify width manually
-    if (golem::get_golem_options("app_mode") == "rt") {
+    if (golem::get_golem_options("app_mode")[1] == "rt") {
       indices <- seq(
         (nrow(filtered_observations) - (num_horizons - 1) * 7), 
         nrow(filtered_observations), 

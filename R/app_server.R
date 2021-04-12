@@ -162,7 +162,7 @@ app_server <- function( input, output, session ) {
                                   view_options)
   
   
-  if (golem::get_golem_options("app_mode") == "rt") {
+  if (golem::get_golem_options("app_mode")[1] == "rt") {
     mod_Rt_sim_plot_server("rt-visualisation", forecast, 
                            observations = golem::get_golem_options("data"))
   }

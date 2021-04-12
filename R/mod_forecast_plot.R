@@ -14,7 +14,7 @@
 mod_forecast_plot_ui <- function(id){
   ns <- NS(id)
   
-  plot_height <- ifelse(golem::get_golem_options("app_mode") == "regular", 
+  plot_height <- ifelse(golem::get_golem_options("app_mode")[1] == "regular", 
                    "850px", 
                    "450px")
   
@@ -71,7 +71,7 @@ mod_forecast_plot_server <- function(id, observations,
       # make basic plot
       plot <- plot_ly() 
       
-      if (golem::get_golem_options("app_mode") == "rt") {
+      if (golem::get_golem_options("app_mode")[1] == "rt") {
         # vertical line for the current date
         l_shape = list(
           type = "line", 
