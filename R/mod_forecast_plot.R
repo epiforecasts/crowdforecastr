@@ -13,8 +13,13 @@
 
 mod_forecast_plot_ui <- function(id){
   ns <- NS(id)
+  
+  plot_height <- ifelse(golem::get_golem_options("app_mode")[1] == "regular", 
+                   "850px", 
+                   "450px")
+  
   tagList(
-    plotlyOutput(ns("forecast_plot"), height = "850px"), 
+    plotlyOutput(ns("forecast_plot"), height = plot_height), 
     h4("Drag points around to change the forecast!")
   )
 }
@@ -62,9 +67,27 @@ mod_forecast_plot_server <- function(id, observations,
                                  # other visual properties
                                  fillcolor = 'rgb(44, 160, 44)',
                                  line = list(color = "transparent")))
-
+      
       # make basic plot
-      plot <- plot_ly() %>%
+      plot <- plot_ly() 
+      
+      if (golem::get_golem_options("app_mode")[1] == "rt") {
+        # vertical line for the current date
+        l_shape = list(
+          type = "line", 
+          y0 = 0, y1 = 1, yref = "paper", # i.e. y as a proportion of visible region
+          x0 = golem::get_golem_options("submission_date"), 
+          x1 = golem::get_golem_options("submission_date"), 
+          line = list(
+            color = "rgb(169,169,169)", 
+            dash = "dash"
+          )
+        )
+        shapes_to_add <- c(circles_pred, list(l_shape))
+      } else {
+        shapes_to_add <- circles_pred
+      }
+      plot <- plot %>%
         add_trace(x = obs_filtered$target_end_date,
                   y = obs_filtered$value, type = "scatter",
                   name = 'observed data',mode = 'lines+markers', 
@@ -77,7 +100,7 @@ mod_forecast_plot_server <- function(id, observations,
                             title = "Date"), 
                yaxis = list(title = selection_id)) %>%
         layout(yaxis = list(hoverformat = '.2f', rangemode = "tozero")) %>%
-        layout(shapes = c(circles_pred)) %>%
+        layout(shapes = c(shapes_to_add)) %>%
         layout(title = "Observations and Forecast") %>%
         layout(legend = list(orientation = 'h')) %>%
         # config(edits = list(shapePosition = TRUE))

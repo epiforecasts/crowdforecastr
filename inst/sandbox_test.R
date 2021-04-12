@@ -1,5 +1,6 @@
 library(magrittr)
 library(crowdforecastr)
+library(shinyjs)
 
 deaths_inc <- data.table::fread("../covid-german-forecasts/data-raw/daily-incidence-deaths.csv") %>%
   dplyr::mutate(inc = "incident",
@@ -17,8 +18,7 @@ observations <- dplyr::bind_rows(deaths_inc,
                 target_end_date = date) %>%
   dplyr::arrange(location, target_type, target_end_date)
 
-  obs_filt <- observations
-
+obs_filt <- observations
 
 
 run_app(data = obs_filt, 

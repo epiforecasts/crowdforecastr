@@ -42,7 +42,14 @@ app_ui <- function(request) {
                       column(width = 9,
                              shinydashboard::box(title = NULL,
                                                  mod_forecast_plot_ui(id = "forecast_plot"),
-                                                 width = NULL)
+                                                 width = NULL), 
+                             if (golem::get_golem_options("app_mode")[1] == "rt") {
+                               shinydashboard::box(title = "Cases simulated from Rt", 
+                                                   status = "primary", 
+                                                   solidHeader = TRUE, 
+                                                   mod_Rt_sim_plot_ui("rt-visualisation"), 
+                                                   width = NULL)
+                             },
                       ),
                       column(width = 3,
                              shinydashboard::box(title = "View Options",

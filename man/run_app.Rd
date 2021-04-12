@@ -5,6 +5,7 @@
 \title{Run the Shiny Application}
 \usage{
 run_app(
+  app_mode = c("regular", "rt"),
   app_title = "Crowd Forecast",
   data,
   first_forecast_date = "auto",
@@ -18,6 +19,7 @@ run_app(
   forecast_sheet_id,
   user_data_sheet_id,
   user_management = TRUE,
+  path_epinow2_samples = "data-raw/samples",
   past_forecasts = NULL,
   app_up_to_date = TRUE,
   default_distribution = "log-normal",
