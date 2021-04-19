@@ -24,7 +24,8 @@ mod_Rt_sim_plot_ui <- function(id){
 #' @noRd 
 mod_Rt_sim_plot_server <- function(id, 
                                    observations, 
-                                   forecast){
+                                   forecast, 
+                                   view_options){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
     
@@ -90,6 +91,10 @@ mod_Rt_sim_plot_server <- function(id,
                       name = "50% uncertainty interval",
                       line = list(color = "transparent"),
                       fillcolor = paste0(color, 0.1, ")'"))
+      }
+      
+      if(view_options$plot_scale == "log") {
+        plot <- layout(plot, yaxis = list(type = "log"))
       }
 
       plot

@@ -173,7 +173,8 @@ mod_forecast_plot_server <- function(id, observations,
       
       
       # turn plot into log scale if log is selected by user
-      if(view_options$plot_scale == "log") {
+      if(view_options$plot_scale == "log" && 
+         golem::get_golem_options("app_mode")[1] == "regular") {
         plot <- layout(plot, yaxis = list(type = "log"))
       }
 
