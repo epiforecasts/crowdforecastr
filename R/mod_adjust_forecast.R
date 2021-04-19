@@ -283,7 +283,7 @@ mod_adjust_forecast_enter_values_server <- function(id, horizon, forecast){
       selection_id <- forecast$selected_combination
       updateNumericInput(session = session, inputId = "median",
                          value = forecast$median[[selection_id]][horizon], 
-                         step = max(0.001, round(forecast$median[[selection_id]][horizon]/50, 3)))
+                         step = max(0.001, round(forecast$median[[selection_id]][horizon]/100, 3)))
     })
     # observe any changes in the median (if baseline is changed on startup) and
     # update the numeric inputs accordingly
@@ -291,7 +291,7 @@ mod_adjust_forecast_enter_values_server <- function(id, horizon, forecast){
       selection_id <- forecast$selected_combination
       updateNumericInput(session = session, inputId = "width",
                          value = round(forecast$width[[selection_id]][horizon], 3), 
-                         step = max(0.001, round(forecast$width[[selection_id]][horizon], 3)))
+                         step = max(0.001, round(forecast$width[[selection_id]][horizon]/100, 3)))
     })
     
     observeEvent(input$copy, {
