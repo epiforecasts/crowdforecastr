@@ -10,8 +10,12 @@
 mod_submissions_overview_ui <- function(id){
   ns <- NS(id)
   tagList(
+    h3("Here are the total forecasts submitted to the app (not including your current submissions):"),
+    tableOutput(outputId = ns("all_submissions_table")),
+    br(),
+    br(),
+    h3("Here are your current submissions:"),
     uiOutput(outputId = ns("submissions"))
- 
   )
 }
     
@@ -46,6 +50,15 @@ mod_submissions_overview_server <- function(id, submitted, view_options){
     # selection_id <- forecast$selected_combination
     
     # make plot
+    
+    
+    # load all submissions
+    all_submissions <- get_existing_forecasts()
+    
+    output$all_submissions_table <- renderTable({
+      all_submissions
+    })
+    
     
     
     # maybe this doesn't have to be wrapped in obesrveEvent
