@@ -9,18 +9,18 @@ get_existing_forecasts <- function(
     ss = regular_sheet, 
     sheet = "predictions"
   ) %>%
-    dplyr::select(c(forecaster_id, forecast_date, 
+    dplyr::select(c(forecaster_id, submission_date, 
                     forecast_time, location_name)) %>%
-    dplyr::filter(forecast_date == max(forecast_date))
+    dplyr::filter(submission_date == max(submission_date))
   
   all_sub_rt <- googlesheets4::read_sheet(
     ss = rt_sheet, 
     sheet = "predictions"
   ) %>%
-    dplyr::select(c(forecaster_id, forecast_date, 
+    dplyr::select(c(forecaster_id, submission_date, 
                     forecast_time, region)) %>%
     dplyr::rename(location_name = region) %>%
-    dplyr::filter(forecast_date == max(forecast_date))
+    dplyr::filter(submission_date == max(submission_date))
   
   
   all_sub <- rbind(all_sub_reg, all_sub_rt) 
