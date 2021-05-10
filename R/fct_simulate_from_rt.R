@@ -7,7 +7,7 @@
 #' @importFrom data.table data.table
 
 
-simulate_cases_from_rt <- function(forecast, epinow2_fit, num_samples = 100) {
+simulate_cases_from_rt <- function(forecast, epinow2_fit, num_samples = 200) {
   selection_id <- forecast$selected_combination
   raw_forecast <- data.table::data.table(
     target_end_date = forecast$x, 
@@ -102,7 +102,7 @@ simulate_cases_from_rt <- function(forecast, epinow2_fit, num_samples = 100) {
 
 
 
-draw_samples <- function(distribution, median, width, num_samples = 100) {
+draw_samples <- function(distribution, median, width, num_samples = 200) {
   if (distribution == "log-normal") {
     values <- exp(rnorm(
       num_samples, mean = log(as.numeric(median)), sd = as.numeric(width))
