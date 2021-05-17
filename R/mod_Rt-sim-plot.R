@@ -51,6 +51,8 @@ mod_Rt_sim_plot_server <- function(id,
       sim_data <- simulate_cases_from_rt(forecast, sim$epinow2_fit)
       sim$forecast <- sim_data$forecast
       sim$truth_data <- sim_data$truth_data
+      print(sim$truth_data)
+      print(sim$truth_data$target_end_date)
       print("simulation finished")
     }, ignoreInit = FALSE)
     
