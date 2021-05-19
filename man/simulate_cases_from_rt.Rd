@@ -4,7 +4,7 @@
 \alias{simulate_cases_from_rt}
 \title{Simulate cases from Rt forecast}
 \usage{
-simulate_cases_from_rt(forecast, epinow2_fit, num_samples = 100)
+simulate_cases_from_rt(forecast, epinow2_fit, num_samples = 200)
 }
 \arguments{
 \item{forecasts}{the crowdforecastr forecast reactive list}
