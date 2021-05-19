@@ -8,24 +8,26 @@
 
 <br>
 
-<h2 id="Becoming-a-good-forecaster"><a href="#Becoming-a-good-forecaster" class="headerlink" title="Becoming a good forecaster"></a>Becoming a good forecaster</h2><p>Improving your forecasting skill takes some time and effort. Here are some tips that may help you. </p>
+<h2 id="Becoming-a-good-forecaster"><a href="#Becoming-a-good-forecaster" class="headerlink" title="Becoming a good forecaster"></a>Becoming a good forecaster</h2><p>Improving your forecasting skill takes some time and effort. Here are some tips that may help you.</p>
 <ol>
-<li>Always look at the <a target="_blank" rel="noopener" href="https://epiforecasts.io/europe-covid-forecast">evaluation</a> of past forecasts. This gives you helpful information about any systematic biases you may have. This could be things like<ul>
-<li>underestimating exponential growth</li>
-<li>being to quick to interpret noisy data as a change in trend, or being to slow to adapt to new trends</li>
-<li>being overly (un-)certain. To check this, check the WIS decomposition tab in the evaluation. This gives you an overview of how much of the penalties your forecasts get come from being too uncertain (a high sharpness value) or for being wrong and not uncertain enough (over- and underprediction)</li>
+<li>Always look at the <a target="_blank" rel="noopener" href="https://epiforecasts.io/crowd-evaluation">evaluation</a> (outcome) of past forecasts. This gives you helpful information about any ‘systematic biases’ you may have. A bias means that you e.g. have a tendency to always over- or underpredict the true observed values. This could be things like<ul>
+<li>  underestimating ‘exponential growth’. Exponential growth is multiplicative, so a value in the future is always the current value times some value (the growth rate). Exponential growth is usually slow in the beginning and then explodes rapidly. </li>
+<li>  being too quick to interpret ‘noisy’ data as a change in trend, or being too slow to adapt to new trends. Public health reporting is often messy. Sometimes numbers don’t get reported because it is a Sunday. Sometimes mistakes happen that should best be understood as ‘noise’. Correctly identifying noise is hard. If numbers go down one week, is that just a random fluke, or does it indicate that something has fundamentally changed and numbers will continue to go down in the future?</li>
+<li>being overly (un-)certain. The ‘weighted interval score’ that is used to score the forecasts has three components: “overprediction”, “underprediction” and “sharpness”. Overprediction and underprediction are penalties that occur if the true observed value falls outside of the range of values deemed plausible by your forecast. If you make a very uncertain forecast, the range of plausible values is larger and you are less likely to get penalties for over- and underprediction. The “sharpness” term on the other hand penalises you for being overly uncertain. This means that you need to finely balance the line between being too uncertain (where you get a sharpness penalty) and too confident (where you get over- and underprediction penalties if your forecast is off). To check this, you can look at the three components in the <a target="_blank" rel="noopener" href="https://epiforecasts.io/crowd-evaluation">evaluation</a> of your forecasts. </li>
 </ul>
 </li>
-<li>Make use of the log view. A straight line on the log view corresponds to exponential growth or decline, which is a good starting point in many (although not all) situations</li>
-<li>Increase your uncertainty over time. You should be much less sure about your forecast 4 weeks into the future than you predictions for next week</li>
-<li>Look at how quickly cases have fallen / risen in the past? Past growth rates may give an indicator for what kind of growth / decline may be likely in the future. </li>
-<li>Use additional information<ul>
-<li>A high Case Fatality Rate, for example, can be indicator that states don’t test enough and a lot of transmissions aren’t detected. This makes continued future growth more likely</li>
-<li>How are testing efforts evolving over time? This may influence reported case numbers even if infections aren’t rising</li>
-<li>Stringency of policy and implemented measures like lock-downs or school re-openings usually have an impact of future cases. Anticipating these may be helpful in forecasting. </li>
-<li>Known reporting artifacts. For example, around Christmas reported cases and deaths were artifically low in many regions. </li>
+<li>Make use of the log view. In the app, you can visualise the forecast on a logarithmic scale. A straight line on the log scale means  exponential growth or decline, which is a good starting point for a forecast in many (although not all) situations</li>
+<li>Increase the uncertainty of your forecast over time. You should be much less sure about your forecast 4 weeks into the future than your forecast for next week</li>
+<li>Look at how quickly cases of Covid-19 infection have fallen / risen in the past. Growth rates in the past may give an indication about how cases can be expected to rise or fall in the future.</li>
+<li>Use additional information:<ul>
+<li>  How are testing efforts for Covid-19 changing over time? More testing may lead to more reported COVID-19 cases, even if infections aren’t rising</li>
+<li>On the other hand, a high Case Fatality Rate (a high number of deaths resulting from Covid-19) might indicate that countries aren’t testing for Covid-19 enough which means that infections are being missed. This makes a rise in COVID-19 cases more likely.<ul>
+<li>  The introduction of, or changes to, policy measures like lockdowns or school reopenings, which can have an impact on  future cases. </li>
 </ul>
 </li>
-<li>Think about counteracting trends that occur at the same time. For example, vaccinations may push cases down, while new variants may make an increase more likely. Which of these effects does a higher influence on the growth rate over the next 4 weeks?</li>
+<li>Quirks in reporting. Sometimes countries report lots of cases on a single day that have been missed previously or correct their reported numbers</li>
+</ul>
+</li>
+<li> Think about balancing out trends that occur at the same time. For example, vaccinations may push cases down, while new variants of Covid-19 may mean a rise in cases is more likely. Which of these factors do you think will have the bigger impact on COVID-19 spread over the next 4 weeks?</li>
 </ol>
 </article><section class="jump-container is-flex is-justify-content-space-between my-6"><!-- em is empty placeholder--><a class="button is-default" href="/2021/05/11/uk-challenge/" title="Introducing the UK Covid-19 Crowd Forecasting Challenge"><i class="iconfont icon-prev mr-2 has-text-grey"></i><span class="has-text-weight-semibold">Previous: Introducing the UK Covid-19 Crowd Forecasting Challenge</span></a></section></div></div></main></main><footer class="is-flex is-flex-direction-column is-align-items-center is-flex-shrink-0 is-family-serif"><section class="sns-container"><a title="twitter" target="_blank" rel="noopener nofollow" href="//twitter.com/https://twiter.com/nikosbosse"><i class="iconfont icon-twitter"></i></a><!-- Github--><a title="github" target="_blank" rel="noopener nofollow" href="//github.com/https://github.com/epiforecasts/crowdforecastr"><i class="iconfont icon-github"></i></a><!-- Ins--><!-- RSS--><!-- 知乎--><!-- 领英--><!-- 脸书--></section><p><span>Copyright ©</span><span> Crowdforecastr 2021</span></p><div class="is-flex is-justify-content-center is-flex-wrap-wrap"><p><a href="/legal-privacy">Legal Notice and Privacy</a></p></div><div><span></span></div></footer><script async defer src="https://buttons.github.io/buttons.js"></script><script src="/js/post.js"></script></body></html>
