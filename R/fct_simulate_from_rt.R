@@ -77,8 +77,8 @@ simulate_cases_from_rt <- function(forecast, epinow2_fit, num_samples = 200) {
     dplyr::filter(variable == "reported_cases", 
                   date >= as.Date(submission_date) - 4)
   
-  weekly_samples <- make_weekly(samples, value_cols = "value", 
-                                group_by = "sample")
+  weekly_samples <- forecasthubutils::make_weekly(samples, value_cols = "value",
+                                                  group_by = "sample")
   
   sim_data$forecast <- weekly_samples[, .(median = median(value), 
                                        lower_98 = quantile(value, 0.01),
