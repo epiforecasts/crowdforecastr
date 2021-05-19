@@ -13,6 +13,13 @@ mod_adjust_forecast_ui <- function(id, num_horizons = 4){
   tagList(
     shinyjs::useShinyjs(),  
     
+    fluidRow(column(12, 
+                    radioButtons(inputId = ns("display_mode"), 
+                                 label = "Display mode",
+                                 choices = c("normal", "expert"), 
+                                 selected = "normal", 
+                                 inline = TRUE))),
+    
     fluidRow(column(8,
                     selectInput(inputId = ns("select_baseline"),
                                 label = "Choose baseline forecast",
@@ -56,25 +63,34 @@ mod_adjust_forecast_ui <- function(id, num_horizons = 4){
 mod_adjust_forecast_enter_values_ui <- function(id, horizon){
   ns <- NS(id)
   
+  # set label for the width box
+  if (horizon == 1) {
+    label <- "Initial width"
+  } else if (horizon == golem::get_golem_options("horizons")) {
+    label <- "Final width"
+  } else {
+    label <- paste0("Width ", horizon)
+  }
+  
   tagList(
     fluidRow(
-      column(4, 
+      column(6, 
              numericInput(inputId = ns("median"),
                           min = 0,
                           label = paste0("Median ", horizon),
                           step = 50,
                           value = NA)), 
-      column(4, 
+      column(6, 
              numericInput(inputId = ns("width"),
                           min = 0,
-                          label = paste0("Width ", horizon),
+                          label = label,
                           step = 0.01,
                           value = NA)), 
-      column(4, 
-             actionButton(inputId = ns("copy"),
-                          label = "Copy above",
-                          style = 'margin-top: 25px')
-      )
+      # column(4, 
+      #        actionButton(inputId = ns("copy"),
+      #                     label = "Copy above",
+      #                     style = 'margin-top: 25px')
+      # )
              
     )
   )
@@ -96,9 +112,25 @@ mod_adjust_forecast_server <- function(id, num_horizons, observations, forecast,
            FUN = function(i) {
              mod_adjust_forecast_enter_values_server(id = paste0("prediction_", i),
                                                      horizon = i,
-                                                     forecast = forecast)
+                                                     forecast = forecast, 
+                                                     display_mode = input$display_mode)
            })
 
+    # display or hide some of the UI elements depending on whether the user
+    # wants to use the regular or the expert mode
+    observeEvent(input$display_mode, {
+      if (input$display_mode == "normal") {
+        shinyjs::hideElement(id = "distribution", asis = FALSE)
+        shinyjs::hideElement(id = "select_baseline", asis = FALSE)
+        shinyjs::hideElement(id = "apply_baseline", asis = FALSE)
+      } else {
+        shinyjs::showElement(id = "distribution", asis = FALSE)
+        shinyjs::showElement(id = "select_baseline", asis = FALSE)
+        shinyjs::showElement(id = "apply_baseline", asis = FALSE)
+      }
+      
+    })
+    
     observeEvent(input$distribution, {
       forecast$distribution <- input$distribution
     })
@@ -267,7 +299,7 @@ mod_adjust_forecast_server <- function(id, num_horizons, observations, forecast,
 #' adjust_forecast Server Functions
 #' @importFrom shinyjs toggleElement
 #' @noRd 
-mod_adjust_forecast_enter_values_server <- function(id, horizon, forecast){
+mod_adjust_forecast_enter_values_server <- function(id, horizon, forecast, display_mode){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
     
