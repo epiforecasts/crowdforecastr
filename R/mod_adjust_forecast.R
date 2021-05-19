@@ -356,6 +356,7 @@ mod_adjust_forecast_enter_values_server <- function(id, horizon, forecast, displ
                          step = max(0.001, round(forecast$width[[selection_id]][horizon]/100, 3)))
     })
     
+    # this part can probably be deleted
     observeEvent(input$copy, {
       selection_id <- forecast$selected_combination
       updateNumericInput(session = session, inputId = "median",
