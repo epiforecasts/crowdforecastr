@@ -108,17 +108,23 @@ mod_adjust_forecast_server <- function(id, num_horizons, observations, forecast,
   moduleServer( id, function(input, output, session){
     ns <- session$ns
 
-    lapply(1:num_horizons,
-           FUN = function(i) {
-             mod_adjust_forecast_enter_values_server(id = paste0("prediction_", i),
-                                                     horizon = i,
-                                                     forecast = forecast, 
-                                                     display_mode = input$display_mode)
-           })
-
+    # make a new reactive value that stores the currently selected display mode
+    displaymode <- reactiveValues(
+      mode = NULL
+    )
+    
     # display or hide some of the UI elements depending on whether the user
     # wants to use the regular or the expert mode
     observeEvent(input$display_mode, {
+      displaymode$mode <- input$display_mode
+      lapply(1:num_horizons,
+             FUN = function(i) {
+               mod_adjust_forecast_enter_values_server(id = paste0("prediction_", i),
+                                                       horizon = i,
+                                                       forecast = forecast, 
+                                                       display_mode = input$display_mode)
+             })
+      
       if (input$display_mode == "normal") {
         shinyjs::hideElement(id = "distribution", asis = FALSE)
         shinyjs::hideElement(id = "select_baseline", asis = FALSE)
@@ -157,11 +163,25 @@ mod_adjust_forecast_server <- function(id, num_horizons, observations, forecast,
       selection_id <- forecast$selected_combination
       # turn latent values into values that are actually stored
       # this should also trigger an automatic update of any numeric inputs
+      
       forecast$distribution <- input$distribution
       forecast$median[[selection_id]] <- forecast$median_latent[[selection_id]]
-      forecast$width[[selection_id]] <- forecast$width_latent[[selection_id]]
       
-      # this works
+      # in the case of the normal interface, we need to extrapolate the width
+      # values from the first to the last value
+      if (displaymode$mode == "normal") {
+        tempwidth <- forecast$width_latent[[selection_id]]
+        
+        tempwidth <- seq(from = tempwidth[1], 
+                         to = tempwidth[length(tempwidth)], 
+                         length.out = length(tempwidth))
+        
+        forecast$width[[selection_id]] <- tempwidth
+        
+      } else {
+        forecast$width[[selection_id]] <- forecast$width_latent[[selection_id]]
+      }
+      
     }, ignoreNULL = FALSE)
     
     # whenever either median or width changes (if points are dragged or 
@@ -306,6 +326,16 @@ mod_adjust_forecast_enter_values_server <- function(id, horizon, forecast, displ
     if (horizon == 1) {
       shinyjs::hideElement(id = "copy", asis = FALSE)
     }
+    
+    # hide everything but the initial and final width in display mode normal
+    observeEvent(display_mode, {
+      if (display_mode == "normal" && !(horizon %in% c(1, golem::get_golem_options("horizons")))) {
+        shinyjs::hideElement(id = "width", asis = FALSE)
+      } else {
+        shinyjs::showElement(id = "width", asis = FALSE)
+      }
+    })
+    
     
     
     # observe any changes in the median 
