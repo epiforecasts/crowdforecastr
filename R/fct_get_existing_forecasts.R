@@ -11,7 +11,7 @@ get_existing_forecasts <- function(
   ) %>%
     dplyr::select(c(forecaster_id, submission_date, 
                     forecast_time, location_name)) %>%
-    dplyr::filter(submission_date == max(submission_date))
+    dplyr::filter(submission_date == suppressWarnings(max(submission_date)))
   
   all_sub_rt <- googlesheets4::read_sheet(
     ss = rt_sheet, 
@@ -20,7 +20,7 @@ get_existing_forecasts <- function(
     dplyr::select(c(forecaster_id, submission_date, 
                     forecast_time, region)) %>%
     dplyr::rename(location_name = region) %>%
-    dplyr::filter(submission_date == max(submission_date))
+    dplyr::filter(submission_date == suppressWarnings(max(submission_date)))
   
   
   all_sub <- rbind(all_sub_reg, all_sub_rt) 
