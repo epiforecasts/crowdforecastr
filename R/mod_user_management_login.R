@@ -15,10 +15,10 @@ mod_user_management_login_ui <- function(id){
     br(), 
     fluidRow(column(12, 
                     style = 'padding-left: 15px; padding-right: 15px',
-                    HTML("<h4><b>Data update</b>: Every Sunday at 8.30am CET</h4>"),
-                    HTML("<h4><b>Submission deadline</b>: Every Monday at 11pm CET (10pm UK time</h4>"),
+                    HTML("<h4><b>Data update</b>: Every Sunday at 12pm UK time (11am CET)</h4>"),
+                    HTML("<h4><b>Submission deadline</b>: Every Monday at 8pm UK time (9pm CET)</h4>"),
                     br(),
-                    HTML("<h4><b>Performance board</b>: <a href = 'https://epiforecasts.io/covid.german.forecasts'>here</a></h4>"),
+                    HTML("<h4><b>Performance board</b>: <a href = 'https://epiforecasts.io/crowd-evaluation'>here</a></h4>"),
                     HTML("<h4><b>Forecast targets</b>: You can select the targets you want to forecasts under 'Account Details'</h4>"),
                     HTML("<h4><b>Zoom note</b>: If the app doesn't fit on your screen we highly recommend you zoom out a bit</h4>"),
                     HTML("<h4><b>Test account</b>: If you just want to take a look, log in with username and password 'test'</h4>")
