@@ -15,7 +15,7 @@ mod_user_management_login_ui <- function(id){
     br(), 
     fluidRow(column(12, 
                     style = 'padding-left: 15px; padding-right: 15px',
-                    HTML("<h4><b>Data update</b>: Every Sunday at 12pm UK time (11am CET)</h4>"),
+                    HTML("<h4><b>Data update</b>: Every Sunday at 12pm UK time (1pm CET)</h4>"),
                     HTML("<h4><b>Submission deadline</b>: Every Monday at 8pm UK time (9pm CET)</h4>"),
                     br(),
                     HTML("<h4><b>Performance board</b>: <a href = 'https://epiforecasts.io/crowd-evaluation'>here</a></h4>"),
