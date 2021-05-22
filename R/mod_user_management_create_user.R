@@ -36,6 +36,8 @@ mod_user_management_create_user_ui <- function(id){
                                                 inline = TRUE)
                              ))
            }),
+    fluidRow(column(2, actionButton(ns("select_all"), label = "Select all")), 
+             column(2, actionButton(ns("deselect_all"), label = "Select none"))),
     
     fluidRow(column(12, h3("Email"))),
     fluidRow(column(12, "Please submit your email, if you like. If you provide your email, we will send you weekly reminders to conduct the survey and may contact you in case of questions.")), 
@@ -66,6 +68,30 @@ mod_user_management_create_user_server <- function(id, user_management,
   moduleServer( id, function(input, output, session){
     ns <- session$ns
 
+    selection_vars <- golem:::get_golem_options("selection_vars")
+    
+    observeEvent(input$select_all, {
+      print("hell")
+      for (var in selection_vars) {
+        updateCheckboxGroupInput(session = session, 
+                                 inputId = paste0("make_selection_", var), 
+                                 choices = list_selections()[[var]],
+                                 selected = list_selections()[[var]], 
+                                 inline = TRUE)
+      }
+    })
+    
+    observeEvent(input$deselect_all, {
+      print("hi")
+      for (var in selection_vars) {
+        print(paste0("make_selection_", var))
+        updateCheckboxGroupInput(inputId = paste0("make_selection_", var), 
+                                 choices = list_selections()[[var]],
+                                 selected = NULL, 
+                                 inline = TRUE)
+      }
+    })
+    
     observeEvent(input$createnew,
                  {
                    user_data <- user_management$user_data

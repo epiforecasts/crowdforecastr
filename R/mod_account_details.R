@@ -36,6 +36,8 @@ mod_account_details_ui <- function(id){
                selection_var = selection_var
              )
            }), 
+    # fluidRow(column(2, actionButton(ns("select_all"), label = "Select all")), 
+    #          column(2, actionButton(ns("deselect_all"), label = "Select none"))),
     br(), 
     actionButton(inputId = ns("update_preferences"), 
                  label = HTML("<b>Update User Data and Preferences</b>"))
