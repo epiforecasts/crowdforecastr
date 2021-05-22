@@ -156,11 +156,15 @@ mod_account_details_selection_ui <- function(id, selection_var){
   selection_options <- possible_selections[[selection_var]]
   
   tagList(
-    checkboxGroupInput(inputId = ns("make_selection"), 
-                       label = paste("Options for", selection_var),
-                       choices = selection_options, 
-                       # selected = selection_options, 
-                       inline = TRUE)
+    fluidRow(column(12, 
+                    checkboxGroupInput(inputId = ns("make_selection"), 
+                                       label = paste("Options for", selection_var),
+                                       choices = selection_options, 
+                                       # selected = selection_options, 
+                                       inline = TRUE)
+                    )), 
+    fluidRow(column(2, actionButton(ns("select_all"), label = "Select all")),
+             column(2, actionButton(ns("deselect_all"), label = "Select none")))
   )
   
 }
@@ -179,6 +183,21 @@ mod_account_details_selection_server <- function(id, selection_var,
     # actionButton there. 
     observeEvent(input$make_selection, {
       user_management$selection_choice[[selection_var]] <- input$make_selection
+    })
+    
+    observeEvent(input$select_all, {
+      updateCheckboxGroupInput(session = session, 
+                               inputId = paste0("make_selection"), 
+                               choices = list_selections()[[selection_var]],
+                               selected = list_selections()[[selection_var]], 
+                               inline = TRUE)
+    })
+    
+    observeEvent(input$deselect_all, {
+      updateCheckboxGroupInput(inputId = paste0("make_selection"), 
+                               choices = list_selections()[[selection_var]],
+                               selected = NULL, 
+                               inline = TRUE)
     })
     
     # update the selected choices according to what the user has selected. 

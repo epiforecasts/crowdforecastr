@@ -8,8 +8,8 @@ layout: page
 
 ## Quick Links
 
-- [Forecast app](https://app.crowdforecastr.org)
-- [Rt forecast app](https://rt-app.crowdforecastr.org)
+- [Forecast app](http://app.crowdforecastr.org)
+- [Rt forecast app](http://rt-app.crowdforecastr.org)
 
 ## The (Classical) Forecast App 
 
