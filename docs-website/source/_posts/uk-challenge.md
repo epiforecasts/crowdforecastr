@@ -33,7 +33,7 @@ You will be automatically entered into the competition once you submit your firs
 
 The competition runs over the course of twelve weeks. Every week between **Sunday 12pm UK Time and Monday 8pm UK time** we will collect your weekly forecast. 
 
-Ideally you should submit a forecast every week, but you don’t have to. You can miss a week or join part-way through the 12 week challenge.  If this happens, you will be placed in the middle of the leaderboard for the weeks that you have missed.
+Ideally you should submit a forecast every week, but you don’t have to. You can miss a week or join part-way through the 12 week challenge.  If this happens, you will be placed in the middle of the leaderboard for the weeks that you have missed (This does not mean you get the average of all forecasts, but instead you get a score that ranks in the middle of all scores for that date). 
 
 The competition will run from **Monday 24th May 2021 until Monday 16th August 2021**. In order to join the contest from the beginning, you will need to submit your first forecast before 8pm on Monday 24th May. 
 
@@ -130,7 +130,7 @@ Simply write an email with your username to epiforecasts [at] gmail.com
 
 We use a scoring system which guarantees that nobody can cheat and everyone is encouraged to provide their best possible forecast (prediction). We’ll combine your predictions for: 1. The number of Covid-19 infections and 2. The number of Covid-19 deaths to give you an overall score.
 
-Your ranking will be based on the “weighted interval score” (WIS) of your forecasts. The weighted interval score has three components: “overprediction”, “underprediction” and “sharpness”. Overprediction and underprediction are penalties that occur if the true observed value falls outside of the range of values deemed plausible by your forecast. If you make a very uncertain forecast, the range of plausible values is larger and you are less likely to get penalties for over- and underprediction. The “sharpness” term on the other hand penalises you for being overly uncertain. This means that you need to finely balance the line between being too uncertain (you get a sharpness penalty) and too confident (you get over- and underprediction penalties if your forecast is off). 
+Your ranking will be based on the “weighted interval score” (WIS) of your forecasts. The 'score' is negatively oriented, meaning that a lower score is better. You can think of the weighted interval score as a 'penalty' for being less than perfect. The weighted interval score is the sum of three components (i.e. three different types of penalties): “overprediction”, “underprediction” and “sharpness”. Overprediction and underprediction are penalties that occur if the true observed value falls outside of the range of values deemed plausible by your forecast. If you make a very uncertain forecast, the range of plausible values is larger and you are less likely to get penalties for over- and underprediction. The “sharpness” term on the other hand penalises you for being overly uncertain. This means that you need to finely balance the line between being too uncertain (you get a sharpness penalty) and too confident (you get over- and underprediction penalties if your forecast is off). 
 	
 To make forecasts of deaths and reported infections more comparable, we will first take the logarithm of your forecasts and the “ground truth data” and then calculate the weighted interval score using these. 
 
