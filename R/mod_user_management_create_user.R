@@ -71,7 +71,6 @@ mod_user_management_create_user_server <- function(id, user_management,
     selection_vars <- golem:::get_golem_options("selection_vars")
     
     observeEvent(input$select_all, {
-      print("hell")
       for (var in selection_vars) {
         updateCheckboxGroupInput(session = session, 
                                  inputId = paste0("make_selection_", var), 
@@ -82,9 +81,7 @@ mod_user_management_create_user_server <- function(id, user_management,
     })
     
     observeEvent(input$deselect_all, {
-      print("hi")
       for (var in selection_vars) {
-        print(paste0("make_selection_", var))
         updateCheckboxGroupInput(inputId = paste0("make_selection_", var), 
                                  choices = list_selections()[[var]],
                                  selected = NULL, 
