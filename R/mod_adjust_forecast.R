@@ -174,7 +174,8 @@ mod_adjust_forecast_server <- function(id, num_horizons, observations, forecast,
         
         tempwidth <- seq(from = tempwidth[1], 
                          to = tempwidth[length(tempwidth)], 
-                         length.out = length(tempwidth))
+                         length.out = length(tempwidth)) %>%
+          round(3)
         
         forecast$width_latent[[selection_id]] <- tempwidth
         forecast$width[[selection_id]] <- tempwidth
