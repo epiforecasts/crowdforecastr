@@ -176,6 +176,7 @@ mod_adjust_forecast_server <- function(id, num_horizons, observations, forecast,
                          to = tempwidth[length(tempwidth)], 
                          length.out = length(tempwidth))
         
+        forecast$width_latent[[selection_id]] <- tempwidth
         forecast$width[[selection_id]] <- tempwidth
         
       } else {
