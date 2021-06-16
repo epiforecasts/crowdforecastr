@@ -7,6 +7,13 @@ date: 2021-05-11
 
 <br>
 
+**short links**
+- [leaderboard](https://epiforecasts.io/uk-challenge/)
+- [classical forecasting app](http://app.crowdforecastr.org)
+- [Rt forecasting app](http://rt-app.crowdforecastr.org)
+
+<br>
+
 On May 24th 2021 the official UK Crowd Forecasting Challenge, hosted by the epiforecast group at the London School of Hygiene & Tropical Medicine will begin. Predicting how Covid-19 may spread is an important but difficult task -  and we need your help!
 
 The UK is at a critical moment. We have a successful vaccination campaign underway. However, at the same time new variants are emerging and spreading, which means easing restrictions comes at a risk.The coming weeks may hold important lessons for other countries coming out of lockdown. Many of these things are hard to model and hard to predict... which is why your help will be invaluable! 
@@ -25,7 +32,7 @@ Visit either
 - the [‘classical’ crowd forecasting app](http://app.crowdforecastr.org/) or 
 - the new [Rt forecasting app](http://rt-app.crowdforecastr.org/) (more on these two [below](#The-forecast-apps)) 
 
-Then you just create an account. All you need to provide is a username and a password (and your email address, if you want to win a prize). Once you create a user account, you will be given a random ID which links all your forecasts to you. Read more about how we handle your data [here](/legal-privacy). In addition there will be a public leaderboard. You can either decide to appear on the leaderboard with your username, or you will be assigned a random pseudonym. 
+Then you just create an account. All you need to provide is a username and a password (and your email address, if you want to win a prize). Once you create a user account, you will be given a random ID which links all your forecasts to you. Read more about how we handle your data [here](/legal-privacy). In addition there will be a public [leaderboard](https://epiforecasts.io/uk-challenge/). You can either decide to appear on the leaderboard with your username, or you will be assigned a random pseudonym. 
 
 You will be automatically entered into the competition once you submit your first forecast for the UK (in the app you can submit forecasts for up to 32 European countries, but only forecasts for the UK will be counted for this competition). 
 
