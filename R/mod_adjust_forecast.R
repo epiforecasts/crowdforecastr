@@ -304,7 +304,7 @@ mod_adjust_forecast_server <- function(id, num_horizons, observations, forecast,
                        if (selection_var == selection_vars[1]) {
                          shinyalert::shinyalert(type = "success", 
                                                 title = "All submissions completed",
-                                                text = "Thank you for your submissions. If you completed all previous locations, you are done now!", 
+                                                text = "Thank you for your submissions. If you completed all previous locations, you are done now! If you made a forecast for the UK, please have a look at this survey: https://forms.gle/aX5txdeng3DN7rjV9", 
                                                 closeOnClickOutside = TRUE)
                        }
                      }
