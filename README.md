@@ -1,5 +1,7 @@
 # crowdforecastr
 
+> **Archived.** No longer maintained; last updated June 2021.
+
 <!-- badges: start -->
 [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
 <!-- badges: end -->
